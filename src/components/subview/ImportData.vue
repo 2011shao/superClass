@@ -7,37 +7,27 @@
         查看教程
       </a-typography-text>
     </a-typography-text> -->
-    <a-spin :loading="loading" style="width: 100%">
+    <a-spin :loading="bit_loading" style="width: 100%">
       <div class="grid-one p-all-1 grid-gap-5">
-        <div class="row-start-center">
-          <a-typography-text class="flex-shrink labelCss">
-            姓名
-          </a-typography-text>
-          <a-select
-            allow-clear
-            v-model="name_filed"
-            placeholder="选择姓名"
-            :options="nameOption"
-            :field-names="{ value: 'id', label: 'name' }"
-          ></a-select>
-        </div>
-        <div class="row-start-center">
-          <a-typography-text class="flex-shrink labelCss">
-            性别
-          </a-typography-text>
-          <a-select
-            allow-clear
-            v-model="sex_filed"
-            placeholder="选择性别"
-            :options="sexOption"
-            :field-names="{ value: 'id', label: 'name' }"
-          ></a-select>
-        </div>
+        <SelectField
+          title="姓名"
+          v-model="bit_import_dic.name_filed"
+          :typeNumArr="[1, 11]"
+          :preSetArr="['姓名']"
+          :allFieldDic="bit_import_dic"
+        ></SelectField>
+        <SelectField
+          title="性别"
+          v-model="bit_import_dic.sex_filed"
+          :typeNumArr="[1,3]"
+          :preSetArr="['性别']"
+          :allFieldDic="bit_import_dic"
+        ></SelectField>
 
         <a-progress v-if="buttonLoading" :percent="progress" />
       </div>
 
-      <a-affix :offsetBottom="40" >
+      <a-affix :offsetBottom="40">
         <div class="row-between-center m-r-10">
           <a-typography-text class="m-t-15 d-block m-l-5"
             >姓名相同时会去重</a-typography-text
@@ -50,9 +40,9 @@
 </template>
 
 <script setup >
-import { bitable, FieldType } from "@lark-base-open/js-sdk";
 import { ref, onMounted, computed, watch, onUnmounted } from "vue";
 import { Message } from "@arco-design/web-vue";
+import SelectField from "../SelectField.vue";
 import { cloneDeep, parseInt } from "lodash";
 import {
   classArr,
@@ -62,73 +52,40 @@ import {
   freeNum,
   switchTabIndex,
 } from "../common";
-
+import {
+  initBaeData,
+  getAllField,
+  bit_all_fieldList,
+  bit_loading,
+  bit_table,
+} from "../superBase";
 const buttonLoading = ref(false);
-const loading = ref(false);
-const fieldList = ref([]);
-const name_filed = ref("");
-const sex_filed = ref("");
 const progress = ref(0);
-const nameOption = computed(() =>
-  fieldList.value.filter((a) => [1, 11].includes(a.type))
-);
-const sexOption = computed(() =>
-  fieldList.value.filter((a) => a.type == 3 || a.type == 1)
-);
-let table = "";
-let imgWorker = "";
-onMounted(async () => {
-  initBaeData();
-  watchSwitchTable();
+const bit_import_dic = ref({
+  name_filed: "",
+  sex_filed: "",
 });
-async function watchSwitchTable() {
-  bitable.base.onSelectionChange((event) => {
-    initBaeData();
-  });
-}
-async function initBaeData() {
-  loading.value = true;
-  table = await bitable.base.getActiveTable();
-  getAllField(true);
-}
-async function getAllField(loadCache = false) {
-  loading.value = true;
-  const fieldMetaList = await table.getFieldMetaList();
-  console.log("ddd", fieldMetaList);
-  fieldList.value = fieldMetaList;
-  if (!name_filed.value) {
-    for (let item of fieldMetaList) {
-      if (item.type == 11 || ["姓名", "名字"].includes(item.name)) {
-        name_filed.value = item.id;
-      }
-      if (item.type == 3 || "性别" == item.name) {
-        sex_filed.value = item.id;
-      }
-    }
-  }
-  loading.value = false;
-}
 
 // 导出word
 async function exportVoid() {
   progress.value = 0;
   buttonLoading.value = true;
-  loading.value = true;
-  const recordList = await table.getRecordList();
-  const view = await table.getActiveView();
+  bit_loading.value = true;
+  const recordList = await bit_table.getRecordList();
+  const view = await bit_table.getActiveView();
   const recordIdList = await view.getVisibleRecordIdList();
+  debugger;
   let newDataArr = [];
   let i = 0;
   for (const record of recordList) {
     if (!recordIdList.includes(record.id)) {
       continue;
     }
-    const nameDic = await getCellValue(record, name_filed.value);
-    const sex = await getCellValue(record, sex_filed.value);
-    debugger;
+    const nameDic = await getCellValue(record, bit_import_dic.value.name_filed);
+    const sex = await getCellValue(record, bit_import_dic.value.sex_filed);
     if (nameDic) {
-      const nameFileDic = fieldList.value.find(
-        (a) => a["id"] == name_filed.value
+      const nameFileDic = bit_all_fieldList.value.find(
+        (a) => a["id"] == bit_import_dic.value.name_filed
       );
       const dic = {
         name: nameFileDic.type == 11 ? nameDic.name : nameDic,
@@ -154,7 +111,7 @@ async function exportVoid() {
   manArr.value = newDataArr;
   console.log("对对对", newDataArr);
   buttonLoading.value = false;
-  loading.value = false;
+  bit_loading.value = false;
   switchTabIndex(3);
 }
 
@@ -165,7 +122,7 @@ async function getCellValue(record, filedId) {
   let valueStr = "";
   const cell = await record.getCellByField(filedId);
   const value = cell.val;
-  const filedType = fieldList.value.find((a) => a["id"] == filedId);
+  const filedType = bit_all_fieldList.value.find((a) => a["id"] == filedId);
   if (value) {
     if (Array.isArray(value)) {
       if (filedType.type == 11 && value.length > 0) {

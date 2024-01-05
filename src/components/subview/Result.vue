@@ -44,7 +44,10 @@
         </a-tooltip>
       </template>
       <template #jiabanWorkArr="{ record, column }">
-        <a-tooltip :content="record[column.dataIndex].join('\n|\n')">
+        <a-tooltip
+          :content="record[column.dataIndex].join('\n|\n')"
+          :content-style="{ maxHeight: '400px', overflow: 'auto' ,background:'rgb(var(--red-3))'}"
+        >
           <a-typography-text type="primary">{{
             record[column.dataIndex]["length"]
           }}</a-typography-text>
@@ -88,7 +91,7 @@ const manColumns = computed(() => {
       key: 1,
       title: "加班",
       dataIndex: "jiabanWorkArr",
-      slotName: "jiabanWorkArr"
+      slotName: "jiabanWorkArr",
     },
   ];
 });
