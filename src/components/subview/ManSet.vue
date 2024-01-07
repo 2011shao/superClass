@@ -53,10 +53,12 @@
         </a-select>
       </div>
     </div>
-    <div class="m-b-15"> </div>
-    <a-affix :offsetBottom="40">
+    <div class="m-b-15"></div>
+    <a-affix :offsetBottom="40" v-if="manArr.length > 0">
       <div class="row-end-center m-r-10">
-        <a-button type="primary" @click="switchTabIndex(4)">下一步</a-button>
+        <a-button type="primary" @click="switchTabIndex(4)"
+          >下一步<icon-right
+        /></a-button>
       </div>
     </a-affix>
   </div>
@@ -65,7 +67,7 @@
 import { Message } from "@arco-design/web-vue";
 import dayjs from "dayjs";
 import { computed, ref } from "vue";
-import { manArr, dateRangeArr, maxFreeNum, switchTabIndex } from "../common";
+import { manArr, dateRangeArr, maxFreeNum, switchTabIndex } from "../js/common";
 
 const showCountIndex = ref(0);
 const manCounDic = computed(() => {

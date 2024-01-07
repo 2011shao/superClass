@@ -32,6 +32,10 @@
       </template>
       <ResultView></ResultView>
     </a-tab-pane>
+    <a-tab-pane :key="5" title="导入表格">
+      <template #title> <icon-translate /> 导入表格 </template>
+      <ImportResult></ImportResult>
+    </a-tab-pane>
   </a-tabs>
 </template>
  <script setup>
@@ -43,6 +47,7 @@ import ManSet from "./subview/ManSet.vue";
 import ResultView from "./subview/Result.vue";
 import WorkSet from "./subview/WorkSet.vue";
 import ImportData from "./subview/ImportData.vue";
+import ImportResult from "./subview/ImportResult.vue";
 
 import {
   manArr,
@@ -52,7 +57,7 @@ import {
   orderMode,
   noWorkDateArr,
   stepNumIndex,
-} from "./common";
+} from "./js/common";
 </script>
 <style scoped>
 .labelText {

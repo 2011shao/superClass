@@ -1,6 +1,12 @@
 <template>
   <div>
-    <div class="row-between-center m-b-10">
+    <div class="row-center-center" v-if="manArr.length == 0">
+      <a-typography-text disabled>请先导入人员数据</a-typography-text>
+    </div>
+    <div
+      class="row-between-center m-b-10"
+      v-if="manArr.length > 0 && classArr.length > 0"
+    >
       <div class="grid-two grid-gap-5">
         <a-tooltip content="排班视图">
           <a-button
@@ -24,8 +30,9 @@
         </a-tooltip>
       </div>
 
-      <a-button type="primary" @click="computedWork">开始排班</a-button>
+      <a-button type="primary" @click="commitVoid">开始排班</a-button>
     </div>
+
     <a-table
       v-show="showTable == 1"
       stripe
@@ -46,7 +53,11 @@
       <template #jiabanWorkArr="{ record, column }">
         <a-tooltip
           :content="record[column.dataIndex].join('\n|\n')"
-          :content-style="{ maxHeight: '400px', overflow: 'auto' ,background:'rgb(var(--red-3))'}"
+          :content-style="{
+            maxHeight: '400px',
+            overflow: 'auto',
+            background: 'rgb(var(--red-3))',
+          }"
         >
           <a-typography-text type="primary">{{
             record[column.dataIndex]["length"]
@@ -64,12 +75,38 @@
       :data="dataArr"
       :pagination="false"
     ></a-table>
+
+    <a-affix :offsetBottom="40" v-if="dataArr.length > 0">
+      <div class="row-end-center m-r-10">
+        <a-button type="primary" @click="switchTabIndex(5)"
+          >下一步 <icon-right />
+        </a-button>
+      </div>
+    </a-affix>
   </div>
 </template>
              <script setup>
+import { Message } from "@arco-design/web-vue";
 import { computed, ref } from "vue";
-import { classArr, dataArr, computedWork, middleArr } from "../common";
-const showTable = ref(1);
+import {
+  classArr,
+  dataArr,
+  computedWork,
+  middleArr,
+  manArr,
+  switchTabIndex,
+} from "../js/common";
+function commitVoid() {
+  if (manArr.value.length == 0) {
+    return Message.info("请导入人员");
+  }
+  if (classArr.value.length == 0) {
+    return Message.info("请设置班次");
+  }
+  computedWork();
+}
+
+const showTable = ref(2);
 const manColumns = computed(() => {
   const arr = classArr.value.map((a) => {
     return {

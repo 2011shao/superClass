@@ -124,9 +124,10 @@
           minManWorkNum
         }}人能满足工作</a-typography-text
       >
-      <a-button type="primary" @click="switchTabIndex(2)">下一步</a-button>
+      <a-button type="primary" @click="switchTabIndex(2)"
+        >下一步<icon-right />
+      </a-button>
     </div>
-    
   </div>
 </template>
              <script setup lang="ts">
@@ -145,7 +146,7 @@ import {
   freeNum,
   minManWorkNum,
   superWork,
-} from "../common";
+} from "../js/common";
 onMounted(() => {});
 // 获取不工作日期
 function getNoWorkDateArr() {

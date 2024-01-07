@@ -19,7 +19,7 @@
         <SelectField
           title="性别"
           v-model="bit_import_dic.sex_filed"
-          :typeNumArr="[1,3]"
+          :typeNumArr="[1, 3]"
           :preSetArr="['性别']"
           :allFieldDic="bit_import_dic"
         ></SelectField>
@@ -28,11 +28,13 @@
       </div>
 
       <a-affix :offsetBottom="40">
-        <div class="row-between-center m-r-10">
-          <a-typography-text class="m-t-15 d-block m-l-5"
+        <div class="row-between-center m-r-10 m-t-15">
+          <a-typography-text class="d-block m-l-5"
             >姓名相同时会去重</a-typography-text
           >
-          <a-button type="primary" @click="exportVoid">下一步</a-button>
+          <a-button type="primary" @click="exportVoid"
+            >下一步 <icon-right />
+          </a-button>
         </div>
       </a-affix>
     </a-spin>
@@ -42,7 +44,7 @@
 <script setup >
 import { ref, onMounted, computed, watch, onUnmounted } from "vue";
 import { Message } from "@arco-design/web-vue";
-import SelectField from "../SelectField.vue";
+import SelectField from "../superView/SelectField.vue";
 import { cloneDeep, parseInt } from "lodash";
 import {
   classArr,
@@ -51,14 +53,15 @@ import {
   maxWorkNum,
   freeNum,
   switchTabIndex,
-} from "../common";
+} from "../js/common";
 import {
   initBaeData,
   getAllField,
   bit_all_fieldList,
   bit_loading,
   bit_table,
-} from "../superBase";
+  import_table_id,
+} from "../js/superBase";
 const buttonLoading = ref(false);
 const progress = ref(0);
 const bit_import_dic = ref({
@@ -68,15 +71,19 @@ const bit_import_dic = ref({
 
 // 导出word
 async function exportVoid() {
+  if (!bit_import_dic.value.name_filed) {
+    Message.info("选择姓名字段");
+    return;
+  }
   progress.value = 0;
   buttonLoading.value = true;
   bit_loading.value = true;
   const recordList = await bit_table.getRecordList();
   const view = await bit_table.getActiveView();
   const recordIdList = await view.getVisibleRecordIdList();
-  debugger;
   let newDataArr = [];
   let i = 0;
+  import_table_id.value = bit_table.id; //记录导入人员的表
   for (const record of recordList) {
     if (!recordIdList.includes(record.id)) {
       continue;
@@ -99,6 +106,7 @@ async function exportVoid() {
         freeDateArr: [],
         jiabanWorkArr: [],
         superWork: true,
+        fieldType: nameFileDic.type,
       };
       const czMan = newDataArr.find((e) => e.name == dic.name);
       if (!czMan) {
@@ -109,7 +117,6 @@ async function exportVoid() {
     progress.value = parseInt(i / recordIdList.length);
   }
   manArr.value = newDataArr;
-  console.log("对对对", newDataArr);
   buttonLoading.value = false;
   bit_loading.value = false;
   switchTabIndex(3);

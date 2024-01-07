@@ -1,6 +1,7 @@
 import dayjs, { Dayjs } from "dayjs";
 import { cloneDeep } from "lodash";
-import { computed, nextTick, ref } from "vue";
+import { computed, nextTick, ref, watch } from "vue";
+import { export_table_id, import_table_id, bit_table, switchTable } from "./superBase";
 const stepNumIndex = ref(0);
 const dateRangeArr = ref<string[]>([dayjs().startOf("month").format("YYYY-MM-DD"), dayjs().endOf("month").format("YYYY-MM-DD")]);
 const noWorkDateArr = ref([]);
@@ -13,20 +14,6 @@ const superWork = ref(false); //是否允许加班
 const dataArr = ref([]);
 const manArr = ref<any>([]);
 const middleArr = ref<any>([]);
-
-// for (let i = 0; i < 8; i++) {
-//   manArr.value.push({
-//     name: "姓名" + i,
-//     id: i,
-//     sex: 1,//1男 2女
-//     freeNum: 6,
-//     maxLxWorkNum: 5,
-//     maxWorkNum: 20,
-//     workDateArr: [],
-//     freeDateArr: [],
-//     canWork: true, //是否参见工作
-//   });
-// }
 // 班次设置
 const classArr = ref([
   {
@@ -152,15 +139,11 @@ function computedWork() {
         }
         console.log(num - canWorkMan.length);
         totalNum = totalNum + (num - canWorkMan.length);
-        console.log("人员不足", dateStr);
         dayWorkDic["remark"] = `${dateStr}~${node}人员不足`;
       }
     }
     dataArr.value.push(dayWorkDic);
   }
-  console.log("还需要再", middleArr.value);
-
-  console.log("result", dataArr.value);
 }
 function getCanAllMan(dateStr, sex = 3, jiaban = false) {
   let result = [];
@@ -217,7 +200,21 @@ function getCanAllMan(dateStr, sex = 3, jiaban = false) {
 // tab 切换
 function switchTabIndex(e) {
   stepNumIndex.value = e;
+ 
 }
+watch(stepNumIndex,()=>{
+  debugger
+  if (stepNumIndex.value == 5) {
+    if (export_table_id.value && export_table_id.value!=bit_table.id) {
+      switchTable(export_table_id.value)
+    }
+    // computedWork()
+  }else{
+    if (import_table_id.value && import_table_id.value!=bit_table.id) {
+      switchTable(import_table_id.value)
+    }
+  }
+})
 // 每天需要多少人工作
 const dayWorkManNum = computed(() => {
   let num = 0;

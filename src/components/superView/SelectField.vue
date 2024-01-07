@@ -9,12 +9,13 @@
         allow-clear
         :trigger-props="{ preventFocus: false }"
         @change="changeValue"
-        v-model="modelValue"
+        v-model="props.modelValue"
         :placeholder="'选择' + props.title"
         :options="getCanOption"
         @clear="changeValue('')"
         :field-names="{ value: 'id', label: 'name' }"
         show-header-on-empty
+        :show-extra-options="false"
       >
         <template #header v-if="canAdd">
           <a-input-search
@@ -39,7 +40,7 @@ import {
   bit_all_fieldList,
   bit_loading,
   addBitNewField,
-} from "./superBase";
+} from "../js/superBase";
 import { cloneDeep } from "lodash";
 import { computed, ref, watch, watchEffect } from "vue";
 import { Message } from "@arco-design/web-vue";
@@ -78,12 +79,13 @@ async function sureAdd() {
   addInputLoading.value = true;
   newFieldName.value = newFieldName.value.trim();
   if (newFieldName.value) {
-    const filedId = await addBitNewField();
+    const filedId = await addBitNewField(newFieldName.value);
     changeValue(filedId);
+  } else {
+    Message.info("字段名字不能为空");
   }
   addInputLoading.value = false;
-
-  Message.info("字段名字不能为空");
+  newFieldName.value = "";
 }
 
 const emit = defineEmits(["update:modelValue"]);
@@ -94,23 +96,20 @@ function changeValue(e) {
 const getCanOption = computed(() => {
   const fieldMetaList = cloneDeep(bit_all_fieldList.value);
   const allFieldArr = Object.values(props.allFieldDic);
-  console.log("搜了几次");
-
   for (let item of fieldMetaList) {
     item["disabled"] = false;
 
     if (
       allFieldArr.includes(item.id) ||
-      !props.typeNumArr.includes(item.type)
+      (props.typeNumArr.length > 0 && !props.typeNumArr.includes(item.type))
     ) {
       item["disabled"] = true;
       continue;
     }
-    if (props.preSetArr.includes(item.name)) {
+    if (props.preSetArr.includes(item.name) && !props.modelValue) {
       emit("update:modelValue", item.id);
     }
   }
-  console.log("dddd", props.allFieldDic);
   return fieldMetaList;
 });
 </script>

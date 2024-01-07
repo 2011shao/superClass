@@ -45,7 +45,8 @@
             </template>
             新增班次</a-button
           >
-          <a-button type="primary" @click="switchTabIndex(1)">下一步</a-button>
+          <a-button type="primary" @click="switchTabIndex(1)">下一步        <icon-right />
+</a-button>
         </div>
       </template>
     </a-table>
@@ -57,7 +58,7 @@
              <script setup>
 import { Message } from "@arco-design/web-vue";
 import { ref } from "vue";
-import { classArr, switchTabIndex } from "../common";
+import { classArr, switchTabIndex } from "../js/common";
 const classColumns = [
   {
     key: 1,
