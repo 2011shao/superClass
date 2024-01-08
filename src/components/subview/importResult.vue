@@ -6,7 +6,6 @@
         v-model="bit_select_dic.tableId"
         canAdd
       ></SelectTableView>
-
       <SelectFieldView
         title="日期"
         v-model="bit_import_dic.date"
