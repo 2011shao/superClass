@@ -2,7 +2,7 @@
 <template>
   <div class="grid-one p-all-1 grid-gap-5">
     <div class="row-start-center">
-      <a-typography-text class="flex-shrink labelCss">
+      <a-typography-text :style="labelStyle" class="flex-shrink labelCss" :class="[props.must?'must':'']">
         {{ props.title }}
       </a-typography-text>
       <a-select
@@ -50,6 +50,11 @@ const props = defineProps({
     type: String,
     default: "",
   },
+  labelStyle:{
+    type:Object,
+    default:()=>{
+    }
+  },
   typeNumArr: {
     type: Array,
     default: () => [1],
@@ -64,6 +69,10 @@ const props = defineProps({
     default: "",
   },
   canAdd: {
+    type: Boolean,
+    default: false,
+  },
+  must: {
     type: Boolean,
     default: false,
   },
@@ -118,5 +127,11 @@ const getCanOption = computed(() => {
   width: 70px;
   text-align: center;
   flex-shrink: 0;
+}
+.must:before{
+  content: '*';
+  color: red;
+  width: 10px;
+  height: 10px;
 }
 </style>

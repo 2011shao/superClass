@@ -200,17 +200,16 @@ function getCanAllMan(dateStr, sex = 3, jiaban = false) {
 // tab 切换
 function switchTabIndex(e) {
   stepNumIndex.value = e;
- 
+
 }
-watch(stepNumIndex,()=>{
-  debugger
+watch(stepNumIndex, () => {
   if (stepNumIndex.value == 5) {
-    if (export_table_id.value && export_table_id.value!=bit_table.id) {
+    if (export_table_id.value && export_table_id.value != bit_table.id) {
       switchTable(export_table_id.value)
     }
     // computedWork()
-  }else{
-    if (import_table_id.value && import_table_id.value!=bit_table.id) {
+  } else {
+    if (import_table_id.value && import_table_id.value != bit_table.id) {
       switchTable(import_table_id.value)
     }
   }

@@ -10,6 +10,7 @@
     <a-spin :loading="bit_loading" style="width: 100%">
       <div class="grid-one p-all-1 grid-gap-5">
         <SelectField
+          must=""
           title="姓名"
           v-model="bit_import_dic.name_filed"
           :typeNumArr="[1, 11]"
@@ -19,8 +20,40 @@
         <SelectField
           title="性别"
           v-model="bit_import_dic.sex_filed"
-          :typeNumArr="[1, 3]"
+          :typeNumArr="[3]"
           :preSetArr="['性别']"
+          :allFieldDic="bit_import_dic"
+        ></SelectField>
+        <SelectField
+          title="是否参与排班"
+          :label-style="{ width: '120px' }"
+          v-model="bit_import_dic.canWork_filed"
+          :typeNumArr="[3]"
+          :preSetArr="['是否参与排班']"
+          :allFieldDic="bit_import_dic"
+        ></SelectField>
+        <SelectField
+          title="是否允许加班"
+          :label-style="{ width: '120px' }"
+          v-model="bit_import_dic.superWork_filed"
+          :typeNumArr="[3]"
+          :preSetArr="['是否允许加班']"
+          :allFieldDic="bit_import_dic"
+        ></SelectField>
+        <SelectField
+          title="预设工作日期"
+          :label-style="{ width: '120px' }"
+          v-model="bit_import_dic.workDate_filed"
+          :typeNumArr="[1, 5]"
+          :preSetArr="['预设工作日期']"
+          :allFieldDic="bit_import_dic"
+        ></SelectField>
+        <SelectField
+          title="预设休息日期"
+          :label-style="{ width: '120px' }"
+          v-model="bit_import_dic.freeDate_filed"
+          :typeNumArr="[1, 5]"
+          :preSetArr="['预设休息日期']"
           :allFieldDic="bit_import_dic"
         ></SelectField>
 
@@ -29,14 +62,27 @@
 
       <a-affix :offsetBottom="40">
         <div class="row-between-center m-r-10 m-t-15">
-          <a-typography-text class="d-block m-l-5"
-            >姓名相同时会去重</a-typography-text
-          >
+          <a-typography-text>小提示<icon-arrow-down /></a-typography-text>
           <a-button type="primary" @click="exportVoid"
             >下一步 <icon-right />
           </a-button>
         </div>
       </a-affix>
+      <div class="grid-one grid-gap-5 m-t-5">
+        <a-typography-text
+          >姓名:字段可以是人员或文本,姓名相同时取第一个</a-typography-text
+        >
+        <a-typography-text>性别:字段要求单选,选项:男与女</a-typography-text>
+        <a-typography-text
+          >是否参与排班:字段要求单选,选项:是与否</a-typography-text
+        >
+        <a-typography-text
+          >是否允许加班:字段要求单选,选项:是与否</a-typography-text
+        >
+        <a-typography-text
+          >预设日期:字段要求文本或者日期,多个日期请用英文","隔开</a-typography-text
+        >
+      </div>
     </a-spin>
   </div>
 </template>
@@ -62,11 +108,16 @@ import {
   bit_table,
   import_table_id,
 } from "../js/superBase";
+import dayjs from "dayjs";
 const buttonLoading = ref(false);
 const progress = ref(0);
 const bit_import_dic = ref({
   name_filed: "",
   sex_filed: "",
+  workDate_filed: "", //工作日期
+  freeDate_filed: "", //休息日期
+  superWork_filed: "", //是否加班
+  canWork_filed: "", //是否参与排班
 });
 
 // 导出word
@@ -88,24 +139,54 @@ async function exportVoid() {
     if (!recordIdList.includes(record.id)) {
       continue;
     }
-    const nameDic = await getCellValue(record, bit_import_dic.value.name_filed);
-    const sex = await getCellValue(record, bit_import_dic.value.sex_filed);
+    debugger;
+    const nameDic = await getCellValue(
+      record,
+      bit_import_dic.value.name_filed,
+      "name_filed"
+    );
+    const sex = await getCellValue(
+      record,
+      bit_import_dic.value.sex_filed,
+      "sex_filed"
+    );
+    const canWork = await getCellValue(
+      record,
+      bit_import_dic.value.canWork_filed,
+      "canWork_filed"
+    );
+    const workDateArr = await getCellValue(
+      record,
+      bit_import_dic.value.workDate_filed,
+      "workDate_filed"
+    );
+    const freeDateArr = await getCellValue(
+      record,
+      bit_import_dic.value.freeDate_filed,
+      "freeDate_filed"
+    );
+    const superWork = await getCellValue(
+      record,
+      bit_import_dic.value.superWork_filed,
+      "superWork_filed"
+    );
     if (nameDic) {
       const nameFileDic = bit_all_fieldList.value.find(
         (a) => a["id"] == bit_import_dic.value.name_filed
       );
+
       const dic = {
         name: nameFileDic.type == 11 ? nameDic.name : nameDic,
         id: nameFileDic.type == 11 ? nameDic.id : i,
         sex: sex.indexOf("女") >= 0 ? 2 : 1, //1男 2女 3不限制男女
-        canWork: true, //是否参见工作
+        canWork: canWork == "否" ? false : true, //是否参见工作
         freeNum: freeNum.value,
         maxLxWorkNum: maxLxWorkNum.value,
         maxWorkNum: maxWorkNum.value,
-        workDateArr: [],
-        freeDateArr: [],
+        workDateArr: workDateArr || [],
+        freeDateArr: freeDateArr || [],
         jiabanWorkArr: [],
-        superWork: true,
+        superWork: superWork == "否" ? false : true,
         fieldType: nameFileDic.type,
       };
       const czMan = newDataArr.find((e) => e.name == dic.name);
@@ -122,7 +203,7 @@ async function exportVoid() {
   switchTabIndex(3);
 }
 
-async function getCellValue(record, filedId) {
+async function getCellValue(record, filedId, filedKey) {
   if (!filedId) {
     return "";
   }
@@ -141,7 +222,19 @@ async function getCellValue(record, filedId) {
     } else if (typeof value == "object") {
       valueStr = value["text"];
     } else {
-      valueStr = value;
+      //  日期文字
+      if (["workDate_filed", "freeDate_filed"].includes(filedKey)) {
+        if (filedType.type == 5) {
+          //日期处理
+          valueStr = [dayjs(value).format("YYYY-MM")];
+        } else {
+          valueStr = value
+            .split(",")
+            .map((a) => dayjs(a, "YYYY-MM-DD", true).isValid());
+        }
+      } else {
+        valueStr = value;
+      }
     }
   }
   return valueStr;
