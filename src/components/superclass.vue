@@ -14,17 +14,17 @@
     <a-tab-pane :key="2">
       <template #title>
         <icon-download />
-        导入人员
+        加载人员设置
       </template>
       <ImportData></ImportData>
     </a-tab-pane>
-    <a-tab-pane :key="3" title="预设">
+    <!-- <a-tab-pane :key="3" title="预设">
       <template #title>
         <icon-check-square />
         预设
       </template>
       <ManSet></ManSet>
-    </a-tab-pane>
+    </a-tab-pane> -->
     <a-tab-pane :key="4" title="排班结果">
       <template #title>
         <icon-select-all />
