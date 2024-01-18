@@ -113,7 +113,7 @@ const classColumns = [
 function addClass() {
   let maxNum = 0;
   for (let item of classArr.value) {
-    const num = parseInt(item["field_"].replace("field_"));
+    const num = parseInt(item["field"].replace("field_",''));
     if (num > maxNum) {
       maxNum = num;
     }
