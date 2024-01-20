@@ -8,11 +8,12 @@
       <a-select
         allow-clear
         :trigger-props="{ preventFocus: false }"
-        v-model="bit_select_dic.tableId"
+        v-model="props.modelValue"
         :placeholder="'选择' + props.title"
         :options="bit_all_table"
         :field-names="{ value: 'id', label: 'name' }"
-        @change="switchTable"
+        @change="changeValue"
+        @clear="changeValue('')"
         show-header-on-empty
         :show-extra-options="false"
       >
@@ -37,7 +38,7 @@ import {
   bit_all_table,
   bit_select_dic,
   addBitNewTable,
-  switchTable
+  switchTable,
 } from "../js/superBase";
 import { cloneDeep } from "lodash";
 import { computed, ref, watch, watchEffect } from "vue";
@@ -52,6 +53,10 @@ const props = defineProps({
     type: Boolean,
     default: false,
   },
+  modelValue: {
+    type: String,
+    default: "",
+  },
 });
 const newFieldName = ref("");
 const addInputLoading = ref(false);
@@ -60,11 +65,14 @@ async function sureAdd() {
   newFieldName.value = newFieldName.value.trim();
   if (newFieldName.value) {
     await addBitNewTable(newFieldName.value);
-  }else{
+  } else {
     Message.info("表名不能为空");
-
   }
   addInputLoading.value = false;
+}
+const emit = defineEmits(["update:modelValue"]);
+function changeValue(e) {
+  emit("update:modelValue", e);
 }
 </script>
 <style>

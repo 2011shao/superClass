@@ -12,17 +12,22 @@ const bit_select_dic = ref<any>({
   tableId: "",
   viewId: "",
 });
+const bit_export_dic = ref({ date: "" });
+
 const import_table_id = ref(""); //导入人员时的表
 const export_table_id = ref(""); //导出人员时的表
 
 bitable.base.onSelectionChange((event) => {
   // initBaeData();
-  console.log("对对对", event);
   if (event.data.tableId != bit_select_dic.value.tableId) {
     initBaeData();
   }
   bit_select_dic.value = event.data;
 });
+bitable.base.onTableDelete(async (event) => {
+  getAllTable()
+  console.log('table deleted')
+})
 
 async function initBaeData() {
   bit_loading.value = true;
@@ -39,7 +44,7 @@ async function getAllField(loadCache = false) {
   bit_loading.value = false;
 }
 initBaeData();
-export { initBaeData, getAllField, import_table_id, export_table_id };
+export { initBaeData, getAllField, import_table_id, export_table_id, bit_export_dic };
 // ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 // 新增字段
@@ -76,14 +81,30 @@ export { bit_all_fieldList, bit_loading, bit_table, addBitNewField, addBitRecord
 // ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 // 获取所有的表格
 async function getAllTable(loadCache = false) {
+  bit_loading.value = true;
+
   bit_all_table.value = await bitable.base.getTableMetaList();
+  if (export_table_id.value) {
+    debugger
+    const cz = bit_all_table.value.findIndex((a) => a['id'] == export_table_id.value)
+    if (cz<0) {
+      export_table_id.value = ''
+      for (let key in bit_export_dic.value) {
+        bit_export_dic.value[key] = ''
+      }
+
+
+    }
+  }
+  bit_loading.value = false;
+
 }
 async function addBitNewTable(name) {
   try {
     const { tableId, index } = await bitable.base.addTable({ name: name, fields: [] });
     await getAllTable();
     await bitable.ui.switchToTable(tableId);
-  } catch (e) {}
+  } catch (e) { }
 }
 async function switchTable(tableId) {
   await bitable.ui.switchToTable(tableId);
@@ -143,6 +164,7 @@ async function oneStepCreateResutTable() {
   let dic = {};
 
   if (isExit) {
+    export_table_id.value = isExit.id
     const result_table = await bitable.base.getTableById(isExit.id);
     const fieldMetaList = await result_table.getFieldMetaList();
     for (let item of classArr.value) {
@@ -154,10 +176,13 @@ async function oneStepCreateResutTable() {
         dic[item["field"]] = class_id;
       }
     }
-    return;
-  }
+    switchTable(isExit.id);
 
+    return dic
+  }
   const { tableId, index } = await bitable.base.addTable({ name: tableName, fields: [] });
+  export_table_id.value = tableId
+
   const table = await bitable.base.getTableById(tableId);
   const date_id = await table.addField({ type: FieldType.Text, name: "日期", description: { content: "" } });
   dic["date"] = date_id;
@@ -165,5 +190,10 @@ async function oneStepCreateResutTable() {
     const class_id = await table.addField({ type: FieldType.Text, name: item.node, description: { content: item.dateRange.join("~") } });
     dic[item["field"]] = class_id;
   }
+  await switchTable(tableId);
+
+  await getAllTable()
+  return dic
+
 }
 export { oneStepCreateManConfig, oneStepCreateResutTable };

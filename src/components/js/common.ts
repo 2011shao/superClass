@@ -1,5 +1,7 @@
 import dayjs, { Dayjs } from "dayjs";
 import { cloneDeep } from "lodash";
+import { Message } from "@arco-design/web-vue";
+
 import { computed, nextTick, ref, watch } from "vue";
 import { export_table_id, import_table_id, bit_table, switchTable } from "./superBase";
 const stepNumIndex = ref(0);
@@ -14,6 +16,7 @@ const superWork = ref(false); //是否允许加班
 const dataArr = ref([]);
 const manArr = ref<any>([]);
 const middleArr = ref<any>([]);
+
 // 班次设置
 const classArr = ref([
   {
@@ -61,6 +64,7 @@ function updateManSet() {
       man["jiabanWorkArr"] = [];
     }
   }
+  console.log('同步人员设置',manArr.value)
   middleArr.value = cloneDeep(manArr.value);
 }
 
@@ -110,6 +114,7 @@ function computedWork() {
         dayWorkDic["remark"] = "全员休息";
         continue;
       }
+      debugger
       const canWorkMan = getCanAllMan(dateStr, sex);
       if (canWorkMan.length >= num) {
         setManWork(node, canWorkMan, dateStr, dayWorkDic);
@@ -134,7 +139,6 @@ function computedWork() {
         // 允许加班
         if (superWork.value) {
           const canWorkMan = getCanAllMan(dateStr, sex, true);
-          debugger;
           setManWork(node, canWorkMan, dateStr, dayWorkDic, true);
           continue;
         }
@@ -200,8 +204,22 @@ function getCanAllMan(dateStr, sex = 3, jiaban = false) {
 
 // tab 切换
 function switchTabIndex(e) {
-  stepNumIndex.value = e;
 
+  if (e == 1) {
+    const exitEmpty = classArr.value.find((a) => {
+      if (!a["node"] || a["dateRange"].length == 0) {
+        return true;
+      }
+    });
+
+    if (exitEmpty) {
+      return Message.info({ content: '班次信息未设置完善', position: "bottom" });
+    }
+  }
+  stepNumIndex.value = e;
+  if (stepNumIndex.value == 4) {
+    computedWork();
+  }
 }
 watch(stepNumIndex, () => {
   if (stepNumIndex.value == 5) {
@@ -210,6 +228,11 @@ watch(stepNumIndex, () => {
     }
     // computedWork()
   } else {
+
+
+
+
+
     if (import_table_id.value && import_table_id.value != bit_table.id) {
       switchTable(import_table_id.value)
     }

@@ -15,7 +15,7 @@
         @clear="changeValue('')"
         :field-names="{ value: 'id', label: 'name' }"
         show-header-on-empty
-        :show-extra-options="false"
+        :show-extra-options="true"
       >
         <template #header v-if="canAdd">
           <a-input-search
@@ -99,6 +99,7 @@ async function sureAdd() {
 
 const emit = defineEmits(["update:modelValue"]);
 function changeValue(e) {
+  debugger
   emit("update:modelValue", e);
 }
 

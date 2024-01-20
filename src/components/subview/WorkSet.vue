@@ -114,12 +114,23 @@
     <div class="row-start-center">
       <a-typography-text class="labelText">是否允许加班</a-typography-text>
       <a-radio-group v-model="superWork">
-        <a-radio :value="true">加班</a-radio>
-        <a-radio :value="false">不允许</a-radio>
+        <a-radio :value="true">是</a-radio>
+        <a-radio :value="false">否</a-radio>
       </a-radio-group>
     </div>
-    <div class="row-between-center">
+    <div class="row-start-center">
+      <a-tooltip>
+        <template #content>
+          <div class="grid-one grid-gap-5 ">
+            <a-typography-text style="color: var(--color-neutral-4)">
+              人员不足时,开启允许加班,会以完成工作为主
+            </a-typography-text>
+          </div>
+        </template>
+        <icon-question-circle />
+      </a-tooltip>
       <a-typography-text
+      class="flex-grow"
         >{{ `上${maxLxWorkNum}休${freeNum}` }},最少需要{{
           minManWorkNum
         }}人能满足工作</a-typography-text

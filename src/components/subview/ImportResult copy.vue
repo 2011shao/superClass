@@ -23,6 +23,8 @@
         :typeNumArr="[]"
         :preSetArr="[item['node']]"
         :allFieldDic="bit_import_dic"
+        :show-extra-options="false"
+
         canAdd
       ></SelectFieldView>
     </div>

@@ -8,9 +8,9 @@
       </a-typography-text>
     </a-typography-text> -->
     <div class="row-between-center">
-      <a-typography-text>初次使用,可选择快捷创建表</a-typography-text>
+      <a-typography-text disabled>初次使用,请创建人员配置表</a-typography-text>
       <a-popconfirm content="确定创建" @ok="createTabLeVoid">
-        <a-button type="primary">创建人员配置表</a-button>
+        <a-button type="primary" status="success">创建人员配置表</a-button>
       </a-popconfirm>
     </div>
     <a-divider></a-divider>
@@ -153,7 +153,6 @@ async function exportVoid() {
     if (!recordIdList.includes(record.id)) {
       continue;
     }
-    debugger;
     const nameDic = await getCellValue(
       record,
       bit_import_dic.value.name_filed,

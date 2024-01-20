@@ -1,88 +1,80 @@
 <template>
   <div>
-    <div class="row-center-center" v-if="manArr.length == 0">
-      <a-typography-text disabled>请先导入人员数据</a-typography-text>
+    <div class="column-center-center m-t-15" v-if="manArr.length == 0">
+      <icon-exclamation-polygon-fill style="font-size: 30px; color: #aaa" />
+      <a-typography-text class="m-t-5" disabled>{{ tsMsg }}</a-typography-text>
     </div>
-    <div
-      class="row-between-center m-b-10"
-      v-if="manArr.length > 0 && classArr.length > 0"
-    >
-      <div class="grid-two grid-gap-5">
-        <a-tooltip content="排班视图">
-          <a-button
-            :type="showTable == 2 ? 'primary' : 'dashed'"
-            @click="() => (showTable = 2)"
-          >
-            <template #icon>
-              <icon-calendar />
-            </template>
-          </a-button>
-        </a-tooltip>
-        <a-tooltip content="人员视图">
-          <a-button
-            :type="showTable == 1 ? 'primary' : 'dashed'"
-            @click="() => (showTable = 1)"
-          >
-            <template #icon>
-              <icon-user />
-            </template>
-          </a-button>
-        </a-tooltip>
+    <div v-if="manArr.length > 0 && classArr.length > 0 && dataArr.length > 0">
+      <div class="row-between-center m-b-10">
+        <div class="grid-two grid-gap-5">
+          <a-tooltip content="排班视图">
+            <a-button
+              :type="showTable == 2 ? 'primary' : 'dashed'"
+              @click="() => (showTable = 2)"
+            >
+              <template #icon>
+                <icon-calendar />
+              </template>
+            </a-button>
+          </a-tooltip>
+          <a-tooltip content="人员视图">
+            <a-button
+              :type="showTable == 1 ? 'primary' : 'dashed'"
+              @click="() => (showTable = 1)"
+            >
+              <template #icon>
+                <icon-user />
+              </template>
+            </a-button>
+          </a-tooltip>
+        </div>
+
+        <a-button type="primary" @click="switchTabIndex(5)">下一步</a-button>
       </div>
 
-      <a-button type="primary" @click="commitVoid">开始排班</a-button>
+      <a-table
+        v-show="showTable == 1"
+        stripe
+        column-resizable
+        :bordered="{ cell: true }"
+        v-if="middleArr.length > 0"
+        :columns="manColumns"
+        :data="middleArr"
+        :pagination="false"
+      >
+        <template #workNum="{ record, column }">
+          <a-tooltip :content="record[column.dataIndex].join('\n|\n')">
+            <a-typography-text type="primary">{{
+              record[column.dataIndex]["length"]
+            }}</a-typography-text>
+          </a-tooltip>
+        </template>
+        <template #jiabanWorkArr="{ record, column }">
+          <a-tooltip
+            :content="record[column.dataIndex].join('\n|\n')"
+            :content-style="{
+              maxHeight: '400px',
+              overflow: 'auto',
+              background: 'rgb(var(--red-3))',
+            }"
+          >
+            <a-typography-text type="primary">{{
+              record[column.dataIndex]["length"]
+            }}</a-typography-text>
+          </a-tooltip>
+        </template>
+      </a-table>
+      <a-table
+        v-show="showTable == 2"
+        stripe
+        column-resizable
+        :bordered="{ cell: true }"
+        v-if="dataArr.length > 0"
+        :columns="resultClassColumns"
+        :data="dataArr"
+        :pagination="false"
+      ></a-table>
     </div>
-
-    <a-table
-      v-show="showTable == 1"
-      stripe
-      column-resizable
-      :bordered="{ cell: true }"
-      v-if="middleArr.length > 0"
-      :columns="manColumns"
-      :data="middleArr"
-      :pagination="false"
-    >
-      <template #workNum="{ record, column }">
-        <a-tooltip :content="record[column.dataIndex].join('\n|\n')">
-          <a-typography-text type="primary">{{
-            record[column.dataIndex]["length"]
-          }}</a-typography-text>
-        </a-tooltip>
-      </template>
-      <template #jiabanWorkArr="{ record, column }">
-        <a-tooltip
-          :content="record[column.dataIndex].join('\n|\n')"
-          :content-style="{
-            maxHeight: '400px',
-            overflow: 'auto',
-            background: 'rgb(var(--red-3))',
-          }"
-        >
-          <a-typography-text type="primary">{{
-            record[column.dataIndex]["length"]
-          }}</a-typography-text>
-        </a-tooltip>
-      </template>
-    </a-table>
-    <a-table
-      v-show="showTable == 2"
-      stripe
-      column-resizable
-      :bordered="{ cell: true }"
-      v-if="dataArr.length > 0"
-      :columns="resultClassColumns"
-      :data="dataArr"
-      :pagination="false"
-    ></a-table>
-
-    <a-affix :offsetBottom="40" v-if="dataArr.length > 0">
-      <div class="row-end-center m-r-10">
-        <a-button type="primary" @click="switchTabIndex(5)"
-          >下一步 <icon-right />
-        </a-button>
-      </div>
-    </a-affix>
   </div>
 </template>
              <script setup>
@@ -95,16 +87,29 @@ import {
   middleArr,
   manArr,
   switchTabIndex,
+  stepNumIndex,
 } from "../js/common";
-function commitVoid() {
-  if (manArr.value.length == 0) {
-    return Message.info("请导入人员");
-  }
+const tsMsg = computed(() => {
+  let msg = "";
+  const exitEmpty = classArr.value.find((a) => {
+    if (!a["node"] || a["dateRange"].length == 0) {
+      return true;
+    }
+  });
   if (classArr.value.length == 0) {
-    return Message.info("请设置班次");
+    msg = "请设置班次";
+  } else if (exitEmpty) {
+    msg = "班次信息未设置完善";
+  } else if (manArr.value.length == 0) {
+    msg = "请先加载人员配置";
+  } else if (dataArr.value.length == 0) {
+    msg = "人员不足";
   }
-  computedWork();
-}
+  if (stepNumIndex.value == 4) {
+    Message.info({content:msg,position:"bottom"});
+  }
+  return msg;
+});
 
 const showTable = ref(2);
 const manColumns = computed(() => {

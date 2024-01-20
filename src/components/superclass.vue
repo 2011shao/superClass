@@ -1,5 +1,5 @@
 <template>
-  <a-tabs :default-active-key="0" v-model:active-key="stepNumIndex">
+  <a-tabs :default-active-key="0" v-model:active-key="stepNumIndex" @tab-click="changeTabIndex">
     <a-tab-pane :key="0">
       <template #title> <icon-calendar /> 设置班次 </template>
       <ClassSet></ClassSet>
@@ -58,6 +58,11 @@ import {
   noWorkDateArr,
   stepNumIndex,
 } from "./js/common";
+function changeTabIndex(e){
+  
+  console.log('ddd',e)
+
+}
 </script>
 <style scoped>
 .labelText {

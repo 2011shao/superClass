@@ -1,7 +1,7 @@
 <template>
-  <a-spin :loading="loading" style="width: 100%">
+  <a-spin :loading="loading || bit_loading" style="width: 100%">
     <div class="row-between-center">
-      <a-typography-text>初次使用,可选择快捷创建表</a-typography-text>
+      <a-typography-text disabled>初次使用,请创建排班结果表</a-typography-text>
       <a-popconfirm content="确定创建" @ok="createTabLeVoid">
         <a-button type="primary">创建排班结果表</a-button>
       </a-popconfirm>
@@ -9,15 +9,15 @@
     <div class="grid-one p-all-1 grid-gap-5">
       <SelectTableView
         title="选择表"
-        v-model="bit_select_dic.tableId"
+        v-model="export_table_id"
         canAdd
       ></SelectTableView>
       <SelectFieldView
         title="日期"
-        v-model="bit_import_dic.date"
+        v-model="bit_export_dic.date"
         :typeNumArr="[1, 11]"
         :preSetArr="['日期']"
-        :allFieldDic="bit_import_dic"
+        :allFieldDic="bit_export_dic"
         canAdd
       ></SelectFieldView>
 
@@ -25,10 +25,10 @@
         v-for="(item, index) in classArr"
         :key="index"
         :title="item.node"
-        v-model="bit_import_dic[item['field']]"
+        v-model:model-value="bit_export_dic[item['field']]"
         :typeNumArr="[]"
         :preSetArr="[item['node']]"
-        :allFieldDic="bit_import_dic"
+        :allFieldDic="bit_export_dic"
         canAdd
       ></SelectFieldView>
     </div>
@@ -50,26 +50,26 @@ import {
   bit_table,
   bit_loading,
   oneStepCreateResutTable,
+  bit_export_dic
 } from "../js/superBase";
 import SelectFieldView from "../superView/SelectField.vue";
 import SelectTableView from "../superView/selectTable.vue";
-const bit_import_dic = ref({ date: "" });
 const loading = ref(false);
 onMounted(() => {
   for (let item of classArr.value) {
-    bit_import_dic.value[item.field] = "";
+    bit_export_dic.value[item.field] = "";
   }
 });
 // 一键创建表
 async function createTabLeVoid() {
   bit_loading.value = true;
-  bit_import_dic.value = await oneStepCreateResutTable();
+  bit_export_dic.value = await oneStepCreateResutTable();
   bit_loading.value = false;
 }
 
 const canImport = computed(
   () =>
-    !Object.values(bit_import_dic.value).includes("") &&
+    !Object.values(bit_export_dic.value).includes("") &&
     dataArr.value.length > 0
 );
 async function fixToBitData() {
@@ -80,11 +80,11 @@ async function fixToBitData() {
   export_table_id.value = bit_table.id; //记录导入人员的表
 
   let fieldNameDic = {
-    date: bit_import_dic.value.date,
+    date: bit_export_dic.value.date,
     ...Object.fromEntries(
       classArr.value.map((item) => [
         item.node,
-        bit_import_dic.value[item.field],
+        bit_export_dic.value[item.field],
       ])
     ),
   };
