@@ -28,14 +28,15 @@ const classArr = ref([
     num: 2,
     sex: 3,
     dateRange: ["10:00", "18:00"],
-    field: "field_2",
+    field: "field_2"
   },
   {
     node: "晚班",
     num: 2,
     sex: 3,
     dateRange: ["18:00", "02:00"],
-    field: "field_3",
+    field: "field_3"
+
   },
 ]);
 // const nodeDic = ref({ zao: 2, zhong: 3, wan: 2 });

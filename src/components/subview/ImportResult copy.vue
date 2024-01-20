@@ -1,11 +1,5 @@
 <template>
   <a-spin :loading="loading" style="width: 100%">
-    <div class="row-between-center">
-      <a-typography-text>初次使用,可选择快捷创建表</a-typography-text>
-      <a-popconfirm content="确定创建" @ok="createTabLeVoid">
-        <a-button type="primary">创建排班结果表</a-button>
-      </a-popconfirm>
-    </div>
     <div class="grid-one p-all-1 grid-gap-5">
       <SelectTableView
         title="选择表"
@@ -48,8 +42,6 @@ import {
   addBitRecord,
   export_table_id,
   bit_table,
-  bit_loading,
-  oneStepCreateResutTable,
 } from "../js/superBase";
 import SelectFieldView from "../superView/SelectField.vue";
 import SelectTableView from "../superView/selectTable.vue";
@@ -60,13 +52,6 @@ onMounted(() => {
     bit_import_dic.value[item.field] = "";
   }
 });
-// 一键创建表
-async function createTabLeVoid() {
-  bit_loading.value = true;
-  bit_import_dic.value = await oneStepCreateResutTable();
-  bit_loading.value = false;
-}
-
 const canImport = computed(
   () =>
     !Object.values(bit_import_dic.value).includes("") &&
