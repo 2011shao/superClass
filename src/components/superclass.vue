@@ -1,42 +1,55 @@
 <template>
-  <a-tabs :default-active-key="0" v-model:active-key="stepNumIndex" @tab-click="changeTabIndex">
-    <a-tab-pane :key="0">
-      <template #title> <icon-calendar /> 设置班次 </template>
-      <ClassSet></ClassSet>
-    </a-tab-pane>
-    <a-tab-pane :key="1">
-      <template #title>
-        <icon-settings />
-        工作设置
-      </template>
-      <WorkSet></WorkSet>
-    </a-tab-pane>
-    <a-tab-pane :key="2">
-      <template #title>
-        <icon-download />
-        加载人员设置
-      </template>
-      <ImportData></ImportData>
-    </a-tab-pane>
-    <!-- <a-tab-pane :key="3" title="预设">
+  <div>
+    <a-typography-text
+      >排班助手
+      <a-typography-text type="primary" @click="helpVoid">
+        查看教程
+      </a-typography-text>
+    </a-typography-text>
+
+    <a-tabs
+      :default-active-key="0"
+      v-model:active-key="stepNumIndex"
+      @tab-click="changeTabIndex"
+    >
+      <a-tab-pane :key="0">
+        <template #title> <icon-calendar /> 设置班次 </template>
+        <ClassSet></ClassSet>
+      </a-tab-pane>
+      <a-tab-pane :key="1">
+        <template #title>
+          <icon-settings />
+          工作设置
+        </template>
+        <WorkSet></WorkSet>
+      </a-tab-pane>
+      <a-tab-pane :key="2">
+        <template #title>
+          <icon-download />
+          加载人员设置
+        </template>
+        <ImportData></ImportData>
+      </a-tab-pane>
+      <!-- <a-tab-pane :key="3" title="预设">
       <template #title>
         <icon-check-square />
         预设
       </template>
       <ManSet></ManSet>
     </a-tab-pane> -->
-    <a-tab-pane :key="4" title="排班结果">
-      <template #title>
-        <icon-select-all />
-        排班结果
-      </template>
-      <ResultView></ResultView>
-    </a-tab-pane>
-    <a-tab-pane :key="5" title="导入表格">
-      <template #title> <icon-translate /> 导入表格 </template>
-      <ImportResult></ImportResult>
-    </a-tab-pane>
-  </a-tabs>
+      <a-tab-pane :key="4" title="排班结果">
+        <template #title>
+          <icon-select-all />
+          排班结果
+        </template>
+        <ResultView></ResultView>
+      </a-tab-pane>
+      <a-tab-pane :key="5" title="导入表格">
+        <template #title> <icon-translate /> 导入表格 </template>
+        <ImportResult></ImportResult>
+      </a-tab-pane>
+    </a-tabs>
+  </div>
 </template>
  <script setup>
 import { Message } from "@arco-design/web-vue";
@@ -58,10 +71,8 @@ import {
   noWorkDateArr,
   stepNumIndex,
 } from "./js/common";
-function changeTabIndex(e){
-  
-  console.log('ddd',e)
-
+function changeTabIndex(e) {
+  console.log("ddd", e);
 }
 </script>
 <style scoped>

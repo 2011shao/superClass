@@ -224,11 +224,14 @@ async function getCellValue(record, filedId, filedKey) {
   const cell = await record.getCellByField(filedId);
   const value = cell.val;
   const filedType = bit_all_fieldList.value.find((a) => a["id"] == filedId);
+
   if (value) {
     if (Array.isArray(value)) {
       if (filedType.type == 11 && value.length > 0) {
         //人员特殊处理 返回字典
         valueStr = value[0];
+      } else if (["workDate_filed", "freeDate_filed"].includes(filedKey)) {
+        valueStr = value.map((a) => a["text"].split(','));
       } else {
         valueStr = value.map((a) => a["text"]).join("");
       }

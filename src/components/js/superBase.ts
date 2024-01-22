@@ -1,6 +1,7 @@
 import { bitable, FieldType, ITable } from "@lark-base-open/js-sdk";
 import { classArr } from "./common";
 import { ref } from "vue";
+import { Message } from "@arco-design/web-vue";
 let bit_table: ITable;
 const bit_loading = ref(false);
 const bit_all_fieldList = ref<any>([{ name: "ddd", id: "111", type: 1 }]);
@@ -87,7 +88,7 @@ async function getAllTable(loadCache = false) {
   if (export_table_id.value) {
     debugger
     const cz = bit_all_table.value.findIndex((a) => a['id'] == export_table_id.value)
-    if (cz<0) {
+    if (cz < 0) {
       export_table_id.value = ''
       for (let key in bit_export_dic.value) {
         bit_export_dic.value[key] = ''
@@ -116,11 +117,12 @@ export { getAllTable, bit_all_table, bit_select_dic, addBitNewTable, switchTable
 // ----------------------------------一键创建配置表
 
 async function oneStepCreateManConfig() {
-  const tableName = "一键排班-人员配置表";
+  const tableName = "排班助手-人员配置表";
   const tableList = await bitable.base.getTableMetaList();
   const isExit = tableList.find((a) => a["name"] == tableName);
   if (isExit) {
     switchTable(isExit.id);
+    Message.info('已创建人员配置表')
     return;
   }
 
@@ -128,28 +130,28 @@ async function oneStepCreateManConfig() {
   const table = await bitable.base.getTableById(tableId);
 
   let dic = {};
-  const name_id = await table.addField({ type: FieldType.Text, name: "姓名", description: { content: "插件[一键排班]与姓名(人员)二选一" } });
-  const name_man = await table.addField({ type: FieldType.User, name: "姓名(人员)", description: { content: "插件[一键排班]与姓名二选一" } });
+  const name_id = await table.addField({ type: FieldType.Text, name: "姓名", description: { content: "插件[排班助手]与姓名(人员)二选一" } });
+  const name_man = await table.addField({ type: FieldType.User, name: "姓名(人员)", description: { content: "插件[排班助手]与姓名二选一" } });
   dic[name_id] = "测试-张三";
-  const sex_id = await table.addField({ type: FieldType.SingleSelect, name: "性别", description: { content: "插件[一键排班]不填写默认为男性" } });
+  const sex_id = await table.addField({ type: FieldType.SingleSelect, name: "性别", description: { content: "插件[排班助手]不填写默认为男性" } });
   const sex_filed = await table.getField(sex_id);
   await sex_filed.addOptions([{ name: "男" }, { name: "女" }]);
   const sex_optione = await sex_filed.getOptions();
   dic[sex_id] = sex_optione[0];
 
-  const canwork_id = await table.addField({ type: FieldType.SingleSelect, name: "是否参与排班", description: { content: "插件[一键排班]不填写默认为参加" } });
+  const canwork_id = await table.addField({ type: FieldType.SingleSelect, name: "是否参与排班", description: { content: "插件[排班助手]不填写默认为参加" } });
   const canwork_filed = await table.getField(canwork_id);
   await canwork_filed.addOptions([{ name: "是" }, { name: "否" }]);
   const can_optione = await canwork_filed.getOptions();
   dic[canwork_id] = can_optione[0];
-  const superwork_id = await table.addField({ type: FieldType.SingleSelect, name: "是否允许加班", description: { content: "插件[一键排班]不填写默认为是 " } });
+  const superwork_id = await table.addField({ type: FieldType.SingleSelect, name: "是否允许加班", description: { content: "插件[排班助手]不填写默认为是 " } });
   const superwork_filed = await table.getField(superwork_id);
   await superwork_filed.addOptions([{ name: "是" }, { name: "否" }]);
   const superwork_optione = await superwork_filed.getOptions();
   dic[superwork_id] = superwork_optione[0];
 
-  const workdate_id = await table.addField({ type: FieldType.Text, name: "预设工作日期", description: { content: "插件[一键排班]多个日期用因为逗号','隔开" } });
-  const freedate_id = await table.addField({ type: FieldType.Text, name: "预设休息日期", description: { content: "插件[一键排班]多个日期用因为逗号','隔开" } });
+  const workdate_id = await table.addField({ type: FieldType.Text, name: "预设工作日期", description: { content: "插件[排班助手]多个日期用因为逗号','隔开" } });
+  const freedate_id = await table.addField({ type: FieldType.Text, name: "预设休息日期", description: { content: "插件[排班助手]多个日期用因为逗号','隔开" } });
   dic[workdate_id] = "2024-01-01,2024-01-02";
   dic[freedate_id] = "2024-01-03,2024-01-04";
   table.addRecord({ fields: dic });
@@ -158,7 +160,7 @@ async function oneStepCreateManConfig() {
 // ----------------------------------一键创建导出表
 
 async function oneStepCreateResutTable() {
-  const tableName = "一键排班-排班结果";
+  const tableName = "排班助手-排班结果";
   const tableList = await bitable.base.getTableMetaList();
   const isExit = tableList.find((a) => a["name"] == tableName);
   let dic = {};
@@ -177,7 +179,6 @@ async function oneStepCreateResutTable() {
       }
     }
     switchTable(isExit.id);
-
     return dic
   }
   const { tableId, index } = await bitable.base.addTable({ name: tableName, fields: [] });
@@ -191,7 +192,6 @@ async function oneStepCreateResutTable() {
     dic[item["field"]] = class_id;
   }
   await switchTable(tableId);
-
   await getAllTable()
   return dic
 

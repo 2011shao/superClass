@@ -45,14 +45,16 @@
             </template>
             新增班次</a-button
           >
-          <a-button type="primary" @click="switchTabIndex(1)">下一步        <icon-right />
-</a-button>
+          <a-button type="primary" @click="switchTabIndex(1)"
+            >下一步 <icon-right />
+          </a-button>
         </div>
       </template>
     </a-table>
-    <a-typography-text class="m-t-15 d-block m-l-5"
-      >根据实际工作需求设置班次</a-typography-text
-    >
+    <div class="row-between-center p-all-5">
+      <a-typography-text>根据实际工作需求设置班次</a-typography-text>
+      <a-button type="text" @click="helpVoid">查看教程</a-button>
+    </div>
   </div>
 </template>
              <script setup>
@@ -113,7 +115,7 @@ const classColumns = [
 function addClass() {
   let maxNum = 0;
   for (let item of classArr.value) {
-    const num = parseInt(item["field"].replace("field_",''));
+    const num = parseInt(item["field"].replace("field_", ""));
     if (num > maxNum) {
       maxNum = num;
     }
@@ -131,6 +133,13 @@ function removeInx(inx) {
   } else {
     Message.info("不能再删除了");
   }
+}
+// bang
+function helpVoid() {
+  window.open(
+    "https://y35xdslz6g.feishu.cn/docx/HLsddDe0doK9egxxEHVc31BFn7g?from=from_copylink",
+    "_blank"
+  );
 }
 </script>
             <style scoped>
