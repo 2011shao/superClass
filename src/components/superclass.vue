@@ -1,11 +1,6 @@
 <template>
   <div>
-    <a-typography-text
-      >排班助手
-      <a-typography-text type="primary" @click="helpVoid">
-        查看教程
-      </a-typography-text>
-    </a-typography-text>
+    >
 
     <a-tabs
       :default-active-key="0"
