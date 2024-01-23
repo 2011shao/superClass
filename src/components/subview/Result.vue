@@ -142,7 +142,7 @@ const resultClassColumns = computed(() => {
   const arr = classArr.value.map((a) => {
     return {
       key: 1,
-      title: a["node"] + "\n" + a["dateRange"][0] + "~" + a["dateRange"][0],
+      title: a["node"] + "\n" + a["dateRange"][0] + "~" + a["dateRange"][1],
       dataIndex: a["node"],
       align: "center",
       render: ({ record, column }) =>

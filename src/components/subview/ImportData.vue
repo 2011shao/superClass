@@ -15,6 +15,11 @@
     </div>
     <a-divider></a-divider>
     <div class="grid-one p-all-1 grid-gap-5">
+      <SelectTableView
+        title="选择表"
+        v-model="import_table_id"
+        canAdd
+      ></SelectTableView>
       <SelectField
         must=""
         title="姓名"
@@ -121,7 +126,10 @@ import {
   addBitNewTable,
   import_table_id,
   oneStepCreateManConfig,
+  is_select_name_field_type
 } from "../js/superBase";
+import SelectTableView from "../superView/selectTable.vue";
+
 import dayjs from "dayjs";
 const buttonLoading = ref(false);
 const progress = ref(0);
@@ -187,7 +195,7 @@ async function exportVoid() {
       const nameFileDic = bit_all_fieldList.value.find(
         (a) => a["id"] == bit_import_dic.value.name_filed
       );
-
+      is_select_name_field_type.value=nameFileDic.type
       const dic = {
         name: nameFileDic.type == 11 ? nameDic.name : nameDic,
         id: nameFileDic.type == 11 ? nameDic.id : i,

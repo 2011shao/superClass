@@ -73,6 +73,7 @@ async function sureAdd() {
 const emit = defineEmits(["update:modelValue"]);
 function changeValue(e) {
   emit("update:modelValue", e);
+  switchTable(e)
 }
 </script>
 <style>

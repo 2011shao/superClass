@@ -88,6 +88,7 @@ async function fixToBitData() {
       ])
     ),
   };
+  
   let arr = dataArr.value.map((item) => {
     const dic = { fields: {} };
     for (let [key, fieldName] of Object.entries(fieldNameDic)) {
@@ -96,7 +97,7 @@ async function fixToBitData() {
         const manList = item[key].map((a) => {
           if (a.fieldType === 11) {
             isManType = true;
-            return { id: a.id };
+            return { id: a.id ,name:a['name']};
           } else {
             return a.name;
           }
