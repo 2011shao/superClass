@@ -4,7 +4,7 @@ import { ref } from "vue";
 import { Message } from "@arco-design/web-vue";
 let bit_table: ITable;
 const bit_loading = ref(false);
-const bit_all_fieldList = ref<any>([{ name: "ddd", id: "111", type: 1 }]);
+const bit_all_fieldList = ref<any>([]);
 const is_select_name_field_type = ref(1);
 const bit_all_table = ref<any>([]);
 const bit_select_dic = ref<any>({
@@ -35,7 +35,6 @@ async function initBaeData() {
   bit_loading.value = true;
   bit_table = await bitable.base.getActiveTable();
   bit_select_dic.value.tableId = bit_table.id;
-  console.log("dd", bit_table);
   getAllField(true);
 }
 async function getAllField(loadCache = false) {
@@ -50,32 +49,40 @@ export { initBaeData, getAllField, import_table_id, export_table_id, bit_export_
 // ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 // 新增字段
-async function addBitNewField(fileName, fieldType = FieldType.Text) {
-  const czItem = bit_all_fieldList.value.find((a) => a["name"] == fileName);
-  if (czItem) {
-    return "";
+
+async function addBitNewField(fileName, tableId, fieldType = FieldType.Text, property = {}) {
+  if (tableId == import_table_id.value) {
+    const czItem = bit_all_fieldList.value.find((a) => a["name"] == fileName);
+    if (czItem) {
+      return czItem.id;
+    } else {
+      const fileId = await bit_table.addField({
+        type: fieldType,
+        name: fileName,
+        property: property,
+      });
+      return fileId;
+    }
   } else {
-    const fileId = await bit_table.addField({
-      type: fieldType,
-      name: fileName,
-    });
-    await getAllField();
-    return fileId;
+    const result_table = await bitable.base.getTableById(tableId);
+    const fieldMetaList = await result_table.getFieldMetaList();
+    const czItem = fieldMetaList.find((a) => a["name"] == fileName);
+    if (czItem) {
+      return czItem.id;
+    } else {
+      const fileId = await result_table.addField({
+        type: fieldType,
+        name: fileName,
+        property: property,
+      });
+      return fileId;
+    }
   }
 }
 // 新增记录
-async function addBitRecord(arr) {
-  const res = await bit_table.addRecords(arr);
-  //   {
-  //     fields: {
-  //       [field.id]: 'new text field value1'
-  //     }
-  //   },
-  //   {
-  //     fields: {
-  //       [field.id]: 'new text field value2'
-  //     }
-  //   },
+async function addBitRecord(arr,tableId) {
+  const result_table = await bitable.base.getTableById(tableId);
+  const res = await result_table.addRecords(arr);
 }
 
 export { bit_all_fieldList, bit_loading, bit_table, addBitNewField, addBitRecord };
@@ -104,7 +111,7 @@ async function getAllTable(loadCache = false) {
       }
     }
   }
-  if (!import_table_id.value) {
+  if (!export_table_id.value) {
     const cz = bit_all_table.value.find((a) => a["name"] == "排班助手-排班结果");
     if (cz) {
       export_table_id.value = cz.id;

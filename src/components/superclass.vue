@@ -1,7 +1,5 @@
 <template>
   <div>
-    >
-
     <a-tabs
       :default-active-key="0"
       v-model:active-key="stepNumIndex"

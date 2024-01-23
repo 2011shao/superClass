@@ -109,7 +109,7 @@ async function fixToBitData() {
     }
     return dic;
   });
-  await addBitRecord(arr);
+  await addBitRecord(arr,export_table_id.value);
   Message.success("导入成功");
   loading.value = false;
 }

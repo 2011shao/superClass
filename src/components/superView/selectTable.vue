@@ -10,7 +10,7 @@
         :trigger-props="{ preventFocus: false }"
         v-model="props.modelValue"
         :placeholder="'选择' + props.title"
-        :options="bit_all_table"
+        :options="getCanOption"
         :field-names="{ value: 'id', label: 'name' }"
         @change="changeValue"
         @clear="changeValue('')"
@@ -57,6 +57,18 @@ const props = defineProps({
     type: String,
     default: "",
   },
+  allFieldDic: {
+    //选中的字段
+    type: Object,
+    default: () => {
+      return {}
+    },
+  },
+  preSetArr: {
+    //预设匹配值 姓名
+    type: Array,
+    default: () => [],
+  },
 });
 const newFieldName = ref("");
 const addInputLoading = ref(false);
@@ -75,6 +87,21 @@ function changeValue(e) {
   emit("update:modelValue", e);
   switchTable(e)
 }
+const getCanOption = computed(() => {
+  const tableList = cloneDeep(bit_all_table.value);
+  const allFieldArr = Object.values(props.allFieldDic);
+  for (let item of tableList) {
+    item["disabled"] = false;
+    if (allFieldArr.includes(item.id)) {
+      item["disabled"] = true;
+      continue;
+    }
+    if (props.preSetArr.includes(item.name) && !props.modelValue) {
+      emit("update:modelValue", item.id);
+    }
+  }
+  return tableList;
+});
 </script>
 <style>
 .labelCss {

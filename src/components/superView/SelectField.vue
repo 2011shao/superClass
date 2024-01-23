@@ -88,7 +88,7 @@ async function sureAdd() {
   addInputLoading.value = true;
   newFieldName.value = newFieldName.value.trim();
   if (newFieldName.value) {
-    const filedId = await addBitNewField(newFieldName.value);
+    const filedId = await addBitNewField(newFieldName.value,props.modelValue);
     changeValue(filedId);
   } else {
     Message.info("字段名字不能为空");

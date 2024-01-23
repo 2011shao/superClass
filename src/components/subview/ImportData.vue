@@ -117,16 +117,12 @@ import {
   switchTabIndex,
 } from "../js/common";
 import {
-  initBaeData,
-  getAllField,
   bit_all_fieldList,
   bit_loading,
   bit_table,
-  addBitNewField,
-  addBitNewTable,
   import_table_id,
   oneStepCreateManConfig,
-  is_select_name_field_type
+  is_select_name_field_type,
 } from "../js/superBase";
 import SelectTableView from "../superView/selectTable.vue";
 
@@ -151,51 +147,51 @@ async function exportVoid() {
   progress.value = 0;
   buttonLoading.value = true;
   bit_loading.value = true;
-  const recordList = await bit_table.getRecordList();
+  // const recordList = await bit_table.getRecordList();
   const view = await bit_table.getActiveView();
   const recordIdList = await view.getVisibleRecordIdList();
   let newDataArr = [];
   let i = 0;
   import_table_id.value = bit_table.id; //记录导入人员的表
-  for (const record of recordList) {
-    if (!recordIdList.includes(record.id)) {
-      continue;
-    }
+  for (const recordId of recordIdList) {
+    const recordValue = await bit_table.getRecordById(recordId);
     const nameDic = await getCellValue(
-      record,
+      recordValue,
       bit_import_dic.value.name_filed,
       "name_filed"
     );
     const sex = await getCellValue(
-      record,
+      recordValue,
       bit_import_dic.value.sex_filed,
       "sex_filed"
     );
     const canWork = await getCellValue(
-      record,
+      recordValue,
       bit_import_dic.value.canWork_filed,
       "canWork_filed"
     );
     const workDateArr = await getCellValue(
-      record,
+      recordValue,
       bit_import_dic.value.workDate_filed,
       "workDate_filed"
     );
     const freeDateArr = await getCellValue(
-      record,
+      recordValue,
       bit_import_dic.value.freeDate_filed,
       "freeDate_filed"
     );
     const superWork = await getCellValue(
-      record,
+      recordValue,
       bit_import_dic.value.superWork_filed,
       "superWork_filed"
     );
+    console.log("333", nameDic);
+
     if (nameDic) {
       const nameFileDic = bit_all_fieldList.value.find(
         (a) => a["id"] == bit_import_dic.value.name_filed
       );
-      is_select_name_field_type.value=nameFileDic.type
+      is_select_name_field_type.value = nameFileDic.type;
       const dic = {
         name: nameFileDic.type == 11 ? nameDic.name : nameDic,
         id: nameFileDic.type == 11 ? nameDic.id : i,
@@ -224,22 +220,22 @@ async function exportVoid() {
   switchTabIndex(4);
 }
 
-async function getCellValue(record, filedId, filedKey) {
+async function getCellValue(recordValue, filedId, filedKey) {
   if (!filedId) {
     return "";
   }
   let valueStr = "";
-  const cell = await record.getCellByField(filedId);
-  const value = cell.val;
+  const value = recordValue["fields"][filedId];
   const filedType = bit_all_fieldList.value.find((a) => a["id"] == filedId);
-
   if (value) {
     if (Array.isArray(value)) {
       if (filedType.type == 11 && value.length > 0) {
         //人员特殊处理 返回字典
         valueStr = value[0];
       } else if (["workDate_filed", "freeDate_filed"].includes(filedKey)) {
-        valueStr = value.map((a) => a["text"].split(','));
+        if (filedType.type == 1) {
+          valueStr = value.map((a) => a["text"].split(","));
+        }
       } else {
         valueStr = value.map((a) => a["text"]).join("");
       }
