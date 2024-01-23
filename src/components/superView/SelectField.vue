@@ -15,7 +15,7 @@
         @clear="changeValue('')"
         :field-names="{ value: 'id', label: 'name' }"
         show-header-on-empty
-        :show-extra-options="true"
+        :show-extra-options="false"
       >
         <template #header v-if="canAdd">
           <a-input-search
