@@ -212,7 +212,7 @@ async function exportVoid() {
       }
     }
     i++;
-    progress.value = parseInt(i / recordIdList.length);
+    progress.value = (i / recordIdList.length).toFixed(2)
   }
   manArr.value = newDataArr;
   buttonLoading.value = false;
