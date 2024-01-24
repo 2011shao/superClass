@@ -2,6 +2,7 @@ import { bitable, FieldType, ITable } from "@lark-base-open/js-sdk";
 import { classArr } from "./common";
 import { ref } from "vue";
 import { Message } from "@arco-design/web-vue";
+import dayjs from "dayjs";
 let bit_table: ITable;
 const bit_loading = ref(false);
 const bit_all_fieldList = ref<any>([]);
@@ -169,11 +170,11 @@ async function oneStepCreateManConfig() {
   const superwork_optione = await superwork_filed.getOptions();
   dic[superwork_id] = superwork_optione[0];
 
-  const workdate_id = await table.addField({ type: FieldType.Text, name: "预设工作日期", description: { content: "插件[排班助手]多个日期用因为逗号','隔开" } });
-  const freedate_id = await table.addField({ type: FieldType.Text, name: "预设休息日期", description: { content: "插件[排班助手]多个日期用因为逗号','隔开" } });
-  dic[workdate_id] = "2024-01-01,2024-01-02";
-  dic[freedate_id] = "2024-01-03,2024-01-04";
-  table.addRecord({ fields: dic });
+  const workdate_id = await table.addField({ type: FieldType.DateTime, name: "预设工作日期", description: { content: "插件[排班助手]多个日期用因为逗号','隔开" } });
+  const freedate_id = await table.addField({ type: FieldType.DateTime, name: "预设休息日期", description: { content: "插件[排班助手]多个日期用因为逗号','隔开" } });
+   dic[workdate_id] = new Date("2024-01-01").getTime();
+   dic[freedate_id] = new Date("2024-01-02").getTime();
+   table.addRecord({ fields: dic });
   switchTable(tableId);
 }
 // ----------------------------------一键创建导出表
@@ -219,7 +220,7 @@ async function oneStepCreateResutTable() {
   export_table_id.value = tableId;
 
   const table = await bitable.base.getTableById(tableId);
-  const date_id = await table.addField({ type: FieldType.Text, name: "日期", description: { content: "" } });
+  const date_id = await table.addField({ type: FieldType.DateTime, name: "日期", description: { content: "" } });
   dic["date"] = date_id;
   for (let item of classArr.value) {
     const class_id = await table.addField({ type: is_select_name_field_type.value == 11 ? FieldType.User : FieldType.Text, name: item.node, description: { content: item.dateRange.join("~") } });

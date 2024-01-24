@@ -15,7 +15,7 @@
       <SelectFieldView
         title="日期"
         v-model="bit_export_dic.date"
-        :typeNumArr="[1, 11]"
+        :typeNumArr="[1, 5]"
         :preSetArr="['日期']"
         :allFieldDic="bit_export_dic"
         canAdd
@@ -50,7 +50,9 @@ import {
   bit_table,
   bit_loading,
   oneStepCreateResutTable,
-  bit_export_dic
+  bit_export_dic,
+  bit_all_table,
+  bit_all_fieldList,
 } from "../js/superBase";
 import SelectFieldView from "../superView/SelectField.vue";
 import SelectTableView from "../superView/selectTable.vue";
@@ -88,7 +90,10 @@ async function fixToBitData() {
       ])
     ),
   };
-  
+  const dateFileDic = bit_all_fieldList.value.find(
+    (a) => a["id"] == bit_export_dic.value.date
+  );
+
   let arr = dataArr.value.map((item) => {
     const dic = { fields: {} };
     for (let [key, fieldName] of Object.entries(fieldNameDic)) {
@@ -97,19 +102,23 @@ async function fixToBitData() {
         const manList = item[key].map((a) => {
           if (a.fieldType === 11) {
             isManType = true;
-            return { id: a.id ,name:a['name']};
+            return { id: a.id, name: a["name"] };
           } else {
             return a.name;
           }
         });
         dic.fields[fieldName] = isManType ? manList : manList.join(",");
       } else {
-        dic.fields[fieldName] = item[key];
+        if (dateFileDic.type == 5) {
+          dic.fields[fieldName] = new Date(item[key]).getTime();
+        } else {
+          dic.fields[fieldName] = item[key]; //new Date(item[key]).getTime()
+        }
       }
     }
     return dic;
   });
-  await addBitRecord(arr,export_table_id.value);
+  await addBitRecord(arr, export_table_id.value);
   Message.success("导入成功");
   loading.value = false;
 }
