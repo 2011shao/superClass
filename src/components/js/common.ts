@@ -31,15 +31,14 @@ const classArr = ref([
     num: 2,
     sex: 3,
     dateRange: ["10:00", "18:00"],
-    field: "field_2"
+    field: "field_2",
   },
   {
     node: "晚班",
     num: 2,
     sex: 3,
     dateRange: ["18:00", "02:00"],
-    field: "field_3"
-
+    field: "field_3",
   },
 ]);
 // const nodeDic = ref({ zao: 2, zhong: 3, wan: 2 });
@@ -64,7 +63,7 @@ function updateManSet() {
       man["jiabanWorkArr"] = [];
     }
   }
-  console.log('同步人员设置',manArr.value)
+  console.log("同步人员设置", manArr.value);
   middleArr.value = cloneDeep(manArr.value);
 }
 
@@ -108,33 +107,21 @@ function computedWork() {
       // 当前班次需要的数据
       const num = node.num;
       const sex = node.sex;
-      dayWorkDic[node.node] = [];
       // 全员休息
       if (noWorkDateArr.value.includes(dateStr)) {
         dayWorkDic["remark"] = "全员休息";
         continue;
       }
-      debugger
+      //获取预设工作人员
+      dayWorkDic[node.node] = getPreWorkMan(dateStr);
+
+      if (dayWorkDic[node.node].length >= num) {
+        continue;
+      }
+
       const canWorkMan = getCanAllMan(dateStr, sex);
       if (canWorkMan.length >= num) {
         setManWork(node, canWorkMan, dateStr, dayWorkDic);
-        // let man = ""
-        // for (let j = 0; j < num; j++) {
-        //   let randomInt = 0
-        //   // 1随机 2 顺序
-        //   if (orderMode.value == 1) {
-        //     randomInt = Math.floor(Math.random() * canWorkMan.length); // 生成一个1-10的随机整数
-        //     man = canWorkMan.splice(randomInt, 1)[0];
-
-        //   } else {
-        //     randomInt = j
-        //     man = canWorkMan[randomInt]
-        //   }
-        //   man["workDateArr"].push(dateStr);
-        //   // 记录每个人每个班的日期
-        //   man[node.node].push(dateStr)
-        //   dayWorkDic[node.node].push(man);
-        // }
       } else {
         // 允许加班
         if (superWork.value) {
@@ -149,6 +136,13 @@ function computedWork() {
     }
     dataArr.value.push(dayWorkDic);
   }
+}
+// 获取预设工作日期
+function getPreWorkMan(dateStr) {
+  return middleArr.value.filter((a) => {
+    const inx = a.workDateArr.findIndex((b) => dayjs(b).isSame(dateStr));
+    return inx >= 0;
+  });
 }
 function getCanAllMan(dateStr, sex = 3, jiaban = false) {
   let result = [];
@@ -204,7 +198,6 @@ function getCanAllMan(dateStr, sex = 3, jiaban = false) {
 
 // tab 切换
 function switchTabIndex(e) {
-
   if (e == 1) {
     const exitEmpty = classArr.value.find((a) => {
       if (!a["node"] || a["dateRange"].length == 0) {
@@ -213,7 +206,7 @@ function switchTabIndex(e) {
     });
 
     if (exitEmpty) {
-      return Message.info({ content: '班次信息未设置完善', position: "bottom" });
+      return Message.info({ content: "班次信息未设置完善", position: "bottom" });
     }
   }
   stepNumIndex.value = e;
@@ -224,20 +217,15 @@ function switchTabIndex(e) {
 watch(stepNumIndex, () => {
   if (stepNumIndex.value == 5) {
     if (export_table_id.value && export_table_id.value != bit_table.id) {
-      switchTable(export_table_id.value)
+      switchTable(export_table_id.value);
     }
     // computedWork()
   } else {
-
-
-
-
-
     if (import_table_id.value && import_table_id.value != bit_table.id) {
-      switchTable(import_table_id.value)
+      switchTable(import_table_id.value);
     }
   }
-})
+});
 // 每天需要多少人工作
 const dayWorkManNum = computed(() => {
   let num = 0;

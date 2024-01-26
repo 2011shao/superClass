@@ -99,7 +99,7 @@ async function sureAdd() {
 
 const emit = defineEmits(["update:modelValue"]);
 function changeValue(e) {
-  debugger
+  
   emit("update:modelValue", e);
 }
 
@@ -108,7 +108,7 @@ const getCanOption = computed(() => {
   const allFieldArr = Object.values(props.allFieldDic);
   for (let item of fieldMetaList) {
     item["disabled"] = false;
-debugger
+
     if (
       allFieldArr.includes(item.id) ||
       (props.typeNumArr.length > 0 && !props.typeNumArr.includes(item.type))

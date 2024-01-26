@@ -212,7 +212,7 @@ async function exportVoid() {
       }
     }
     i++;
-    progress.value = (i / recordIdList.length).toFixed(2)
+    progress.value = (i / recordIdList.length).toFixed(2);
   }
   manArr.value = newDataArr;
   buttonLoading.value = false;
@@ -224,6 +224,7 @@ async function getCellValue(recordValue, filedId, filedKey) {
   if (!filedId) {
     return "";
   }
+
   let valueStr = "";
   const value = recordValue["fields"][filedId];
   const filedType = bit_all_fieldList.value.find((a) => a["id"] == filedId);
@@ -235,6 +236,9 @@ async function getCellValue(recordValue, filedId, filedKey) {
       } else if (["workDate_filed", "freeDate_filed"].includes(filedKey)) {
         if (filedType.type == 1) {
           valueStr = value.map((a) => a["text"].split(","));
+          if (valueStr) {
+            valueStr = valueStr[0];
+          }
         }
       } else {
         valueStr = value.map((a) => a["text"]).join("");
@@ -246,8 +250,9 @@ async function getCellValue(recordValue, filedId, filedKey) {
       if (["workDate_filed", "freeDate_filed"].includes(filedKey)) {
         if (filedType.type == 5) {
           //日期处理
-          valueStr = [dayjs(value).format("YYYY-MM")];
+          valueStr = [dayjs(value).format("YYYY-MM-DD")];
         } else {
+          debugger;
           valueStr = value
             .split(",")
             .map((a) => dayjs(a, "YYYY-MM-DD", true).isValid());
