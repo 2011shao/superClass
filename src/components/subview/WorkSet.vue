@@ -64,6 +64,7 @@
       <a-range-picker
         class="flex-grow"
         v-model="dateRangeArr"
+        :allow-clear="false"
         :shortcuts="[
           {
             label: '本月',
@@ -158,9 +159,13 @@ import {
   minManWorkNum,
   superWork,
 } from "../js/common";
-onMounted(() => {});
+const dateRange=ref()
+onMounted(() => {
+  console.log(dateRange.value)
+});
 // 获取不工作日期
 function getNoWorkDateArr() {
+
   if (dateRangeArr.value.length < 2) {
     return [];
   }
@@ -208,11 +213,12 @@ function noWorkFormWeek(week, e) {
   noWorkDateArr.value = datesInRange;
 }
 </script>
-<style scoped>
+<style>
 .labelText {
   width: 100px;
   flex-shrink: 0;
 }
+
 </style>
                                     
                         
