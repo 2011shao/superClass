@@ -70,11 +70,12 @@ function updateManSet() {
 // 人员充足时 安排人员工作
 function setManWork(node, canWorkMan, dateStr, dayWorkDic, jiaban = false) {
   let man = "";
+  let randomInt = 0;
+
   for (let j = 0; j < node.num; j++) {
     if (j >= canWorkMan.length) {
       continue;
     }
-    let randomInt = 0;
     // 1随机 2 顺序
     if (orderMode.value == 1) {
       randomInt = Math.floor(Math.random() * canWorkMan.length); // 生成一个1-10的随机整数
@@ -90,6 +91,7 @@ function setManWork(node, canWorkMan, dateStr, dayWorkDic, jiaban = false) {
     // 记录每个人每个班的日期
     man[node.node].push(dateStr);
     dayWorkDic[node.node].push(man);
+    dayWorkDic['workManArr'].push(man['name'])
   }
 }
 
@@ -102,6 +104,7 @@ function computedWork() {
   for (let dateStr of allDateArr) {
     let dayWorkDic = {
       date: dateStr,
+      workManArr:[]
     };
     for (let node of classArr.value) {
       // 当前班次需要的数据
@@ -113,7 +116,7 @@ function computedWork() {
         continue;
       }
       //获取预设工作人员
-      dayWorkDic[node.node] = getPreWorkMan(dateStr);
+      dayWorkDic[node.node] = getPreWorkMan(dateStr,dayWorkDic['workManArr']);
 
       if (dayWorkDic[node.node].length >= num) {
         continue;
@@ -138,14 +141,19 @@ function computedWork() {
   }
 }
 // 获取预设工作日期
-function getPreWorkMan(dateStr) {
+function getPreWorkMan(dateStr,wlWorkManArr) {
   return middleArr.value.filter((a) => {
+    if(wlWorkManArr.includes(a.name))
+    {
+      return false
+    }
     const inx = a.workDateArr.findIndex((b) => dayjs(b).isSame(dateStr));
     return inx >= 0;
   });
 }
 function getCanAllMan(dateStr, sex = 3, jiaban = false) {
   let result = [];
+  
   for (let item of middleArr.value) {
     // 性别不符合
     if (sex < 3 && item["sex"] != sex) {
