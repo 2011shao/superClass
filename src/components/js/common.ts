@@ -63,7 +63,7 @@ function updateManSet() {
       man["jiabanWorkArr"] = [];
     }
   }
-  console.log("同步人员设置", manArr.value);
+  // console.log("同步人员设置", manArr.value);
   middleArr.value = cloneDeep(manArr.value);
 }
 

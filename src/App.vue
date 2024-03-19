@@ -6,6 +6,7 @@
 </template>
 <script setup>
 import superclass from "./components/superclass.vue";
+console.log('3月19日更新')
 </script>
 
 <style>

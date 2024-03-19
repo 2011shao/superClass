@@ -185,7 +185,7 @@ async function exportVoid() {
       bit_import_dic.value.superWork_filed,
       "superWork_filed"
     );
-    console.log("333", nameDic);
+    // console.log("333", nameDic);
 
     if (nameDic) {
       const nameFileDic = bit_all_fieldList.value.find(
