@@ -5,8 +5,10 @@
   </main>
 </template>
 <script setup>
+import dayjs from "dayjs";
 import superclass from "./components/superclass.vue";
-console.log('3月19日更新')
+const cha=dayjs('23:00').diff('02:00','ms')
+console.log('4月28日更新',cha)
 </script>
 
 <style>

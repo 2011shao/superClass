@@ -52,6 +52,22 @@
         :allFieldDic="bit_import_dic"
       ></SelectField>
       <SelectField
+        title="总工时"
+        :label-style="{ width: '120px' }"
+        v-model="bit_import_dic.total_work_time_filed"
+        :typeNumArr="[2]"
+        :preSetArr="['总工时']"
+        :allFieldDic="bit_import_dic"
+      ></SelectField>
+      <SelectField
+        title="附加工时"
+        :label-style="{ width: '120px' }"
+        v-model="bit_import_dic.other_work_time_filed"
+        :typeNumArr="[2]"
+        :preSetArr="['附加工时']"
+        :allFieldDic="bit_import_dic"
+      ></SelectField>
+      <SelectField
         title="预设工作日期"
         :label-style="{ width: '120px' }"
         v-model="bit_import_dic.workDate_filed"
@@ -132,6 +148,8 @@ const progress = ref(0);
 const bit_import_dic = ref({
   name_filed: "",
   sex_filed: "",
+  total_work_time_filed:0,//总工时
+  other_work_time_filed:0,//其他工时
   workDate_filed: "", //工作日期
   freeDate_filed: "", //休息日期
   superWork_filed: "", //是否加班
@@ -175,6 +193,18 @@ async function exportVoid() {
       bit_import_dic.value.workDate_filed,
       "workDate_filed"
     );
+    const total_work_time = await getCellValue(
+      recordValue,
+      bit_import_dic.value.total_work_time_filed,
+      "total_work_time_filed"
+    );
+    
+    const other_work_time = await getCellValue(
+      recordValue,
+      bit_import_dic.value.other_work_time_filed,
+      "other_work_time_filed"
+    );
+    
     const freeDateArr = await getCellValue(
       recordValue,
       bit_import_dic.value.freeDate_filed,
@@ -185,6 +215,8 @@ async function exportVoid() {
       bit_import_dic.value.superWork_filed,
       "superWork_filed"
     );
+
+    
     // console.log("333", nameDic);
 
     if (nameDic) {
@@ -200,6 +232,8 @@ async function exportVoid() {
         freeNum: freeNum.value,
         maxLxWorkNum: maxLxWorkNum.value,
         maxWorkNum: maxWorkNum.value,
+        total_work_time:total_work_time>0?total_work_time:1000,
+        other_work_time:other_work_time,
         workDateArr: workDateArr || [],
         freeDateArr: freeDateArr || [],
         jiabanWorkArr: [],

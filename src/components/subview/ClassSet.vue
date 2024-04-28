@@ -11,11 +11,18 @@
         <a-input v-model="record['node']" placeholder="班次名字"></a-input>
       </template>
       <template #dateRange="{ record }">
-        <a-time-picker
-          type="time-range"
-          format="HH:mm"
-          v-model="record['dateRange']"
-        ></a-time-picker>
+        <a-space>
+          <a-time-picker format="HH:mm" v-model="record['startTime']">
+            <template #suffix-icon>
+              <a-typography-text></a-typography-text>
+            </template>
+          </a-time-picker>
+          <a-time-picker format="HH:mm" v-model="record['endTime']">
+            <template #suffix-icon>
+              <a-typography-text></a-typography-text>
+            </template>
+          </a-time-picker>
+        </a-space>
       </template>
       <template #num="{ record }">
         <a-input-number
@@ -52,7 +59,7 @@
       </template>
     </a-table>
     <div class="row-between-center p-all-5">
-      <a-typography-text>根据实际工作需求设置班次</a-typography-text>
+      <a-typography-text>根据实际工作需求设置班次,班次设置请自行效验</a-typography-text>
       <a-button type="text" @click="helpVoid">查看教程</a-button>
     </div>
   </div>
@@ -124,6 +131,8 @@ function addClass() {
     node: "",
     num: 2,
     sex: 3,
+    startTime:"",
+    endTime:"",
     field: `field_${maxNum + 1}`,
   });
 }

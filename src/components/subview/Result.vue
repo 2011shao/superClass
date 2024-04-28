@@ -92,7 +92,7 @@ import {
 const tsMsg = computed(() => {
   let msg = "";
   const exitEmpty = classArr.value.find((a) => {
-    if (!a["node"] || a["dateRange"].length == 0) {
+    if (!a["node"] || !a["startTime"] || !a["endTime"]) {
       return true;
     }
   });
@@ -116,7 +116,7 @@ const manColumns = computed(() => {
   const arr = classArr.value.map((a) => {
     return {
       key: 1,
-      title: a["node"] + "\n" + a["dateRange"][0] + "~" + a["dateRange"][1],
+      title: a["node"] + "\n" + a["startTime"] + "~" + a["endTime"],
       dataIndex: a["node"],
       align: "center",
       slotName: "workNum",
@@ -135,6 +135,12 @@ const manColumns = computed(() => {
       dataIndex: "jiabanWorkArr",
       slotName: "jiabanWorkArr",
     },
+    {
+      key: 1,
+      title: "总工时",
+      dataIndex: "workDetailDic",
+      render:({record})=>record.workDetailDic.totalWorkTime/(3600*1000)
+    }
   ];
 });
 
@@ -142,7 +148,7 @@ const resultClassColumns = computed(() => {
   const arr = classArr.value.map((a) => {
     return {
       key: 1,
-      title: a["node"] + "\n" + a["dateRange"][0] + "~" + a["dateRange"][1],
+      title: a["node"] + "\n" + a["startTime"] + "~" + a["endTime"],
       dataIndex: a["node"],
       align: "center",
       render: ({ record, column }) =>

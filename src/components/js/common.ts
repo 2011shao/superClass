@@ -10,6 +10,7 @@ const noWorkDateArr = ref([]);
 const maxLxWorkNum = ref(5); //最大连续工作天数
 const maxWorkNum = ref(2000); // 最大工作天数
 const maxFreeNum = ref(2000); // 最大休息天数
+// const maxDayWorkTimeNum=ref(8)//每天工作时长
 const freeNum = ref(1); //连续工作后休息的天数
 const orderMode = ref(2); //1随机 2顺序
 const superWork = ref(false); //是否允许加班
@@ -23,22 +24,31 @@ const classArr = ref([
     node: "早班",
     num: 2,
     sex: 3,
-    dateRange: ["02:00", "10:00"],
+    startTime: "02:00",
+    endTime: "10:00",
     field: "field_1",
+    is_jump: false, //不跨天
+    chaTime: 0, //差
   },
   {
     node: "白班",
     num: 2,
     sex: 3,
-    dateRange: ["10:00", "18:00"],
+    startTime: "10:00",
+    endTime: "18:00",
     field: "field_2",
+    is_jump: false, //不跨天
+    chaTime: 0, //差
   },
   {
     node: "晚班",
     num: 2,
     sex: 3,
-    dateRange: ["18:00", "02:00"],
+    startTime: "18:00",
+    endTime: "02:00",
     field: "field_3",
+    is_jump: false, //不跨天
+    chaTime: 0, //差
   },
 ]);
 // const nodeDic = ref({ zao: 2, zhong: 3, wan: 2 });
@@ -58,6 +68,10 @@ function updateManSet() {
   for (let man of manArr.value) {
     man["freeNum"] = maxFreeNum.value;
     man["maxLxWorkNum"] = maxLxWorkNum.value;
+    man["workDetailDic"] = {
+      totalWorkTime: 0,
+      workArr: [],
+    };
     for (let node of classArr.value) {
       man[node.node] = [];
       man["jiabanWorkArr"] = [];
@@ -85,26 +99,44 @@ function setManWork(node, canWorkMan, dateStr, dayWorkDic, jiaban = false) {
       man = canWorkMan[randomInt];
     }
     man["workDateArr"].push(dateStr);
+    // 工作总工作时长
+    man["workDetailDic"]["totalWorkTime"] += node.chaTime;
+    // 工作时间点 跨天
+    if (node.is_jump) {
+      let workTime = {
+        startTime: `${dateStr} ${node.startTime}`,
+        endTime: dayjs(dateStr).add(1, "day").format(`YYYY-MM-DD ${node.endTime}`),
+      };
+      man["workDetailDic"]["workArr"].push(workTime);
+    } else {
+      let workTime = {
+        startTime: `${dateStr} ${node.startTime}`,
+        endTime: `${dateStr} ${node.endTime}`,
+      };
+      man["workDetailDic"]["workArr"].push(workTime);
+    }
+
     if (jiaban) {
       man["jiabanWorkArr"].push(dateStr);
     }
     // 记录每个人每个班的日期
     man[node.node].push(dateStr);
     dayWorkDic[node.node].push(man);
-    dayWorkDic['workManArr'].push(man['name'])
+    dayWorkDic["workManArr"].push(man["name"]);
   }
 }
 
 // ... 其他代码
 function computedWork() {
   dataArr.value = [];
+  // 获取日期内的所有日期
   const allDateArr = getAllDateFromDateRange();
   let totalNum = 0;
   updateManSet();
   for (let dateStr of allDateArr) {
     let dayWorkDic = {
       date: dateStr,
-      workManArr:[]
+      workManArr: [],
     };
     for (let node of classArr.value) {
       // 当前班次需要的数据
@@ -116,12 +148,12 @@ function computedWork() {
         continue;
       }
       //获取预设工作人员
-      dayWorkDic[node.node] = getPreWorkMan(dateStr,dayWorkDic['workManArr']);
+      dayWorkDic[node.node] = getPreWorkMan(dateStr, dayWorkDic["workManArr"]);
 
       if (dayWorkDic[node.node].length >= num) {
         continue;
       }
-
+      // 获取满足工作条件的人
       const canWorkMan = getCanAllMan(dateStr, sex);
       if (canWorkMan.length >= num) {
         setManWork(node, canWorkMan, dateStr, dayWorkDic);
@@ -139,13 +171,13 @@ function computedWork() {
     }
     dataArr.value.push(dayWorkDic);
   }
+  console.log("提交", dataArr.value);
 }
 // 获取预设工作日期
-function getPreWorkMan(dateStr,wlWorkManArr) {
+function getPreWorkMan(dateStr, wlWorkManArr) {
   return middleArr.value.filter((a) => {
-    if(wlWorkManArr.includes(a.name))
-    {
-      return false
+    if (wlWorkManArr.includes(a.name)) {
+      return false;
     }
     const inx = a.workDateArr.findIndex((b) => dayjs(b).isSame(dateStr));
     return inx >= 0;
@@ -153,13 +185,19 @@ function getPreWorkMan(dateStr,wlWorkManArr) {
 }
 function getCanAllMan(dateStr, sex = 3, jiaban = false) {
   let result = [];
-  
+
   for (let item of middleArr.value) {
     // 性别不符合
     if (sex < 3 && item["sex"] != sex) {
       continue;
     }
-    // 过滤掉 不能工作的
+    // 最大工作时长
+    const max_can_work_time = item.total_work_time + item.other_work_time;
+    const cur_work_time = item["workDetailDic"]["totalWorkTime"] / (3600 * 1000);
+    if (cur_work_time >= max_can_work_time) {
+      continue;
+    }
+    // 过滤掉 不参与排版的
     if (!item["canWork"]) {
       continue;
     }
@@ -172,17 +210,29 @@ function getCanAllMan(dateStr, sex = 3, jiaban = false) {
       continue;
     }
 
-    // 连续工作天数 小于最多联系工作天数
+    // 连续工作天数 小于最多连续工作天数
     if (item.workDateArr.length < maxLxWorkNum.value) {
       result.push(item);
       continue;
     }
-    // 日期排序 联系工作日期次数 大于 最大工作次数
+    // 日期排序 连续工作日期次数 大于 最大工作次数
     item.workDateArr = item.workDateArr.sort((a, b) => new Date(a).getTime() - new Date(b).getTime());
     // 判断 是否有连续工作的日期
-    const lastThreeDates = item.workDateArr.slice(-3).map((date) => new Date(date).getTime());
-    const isLxWork = Math.abs(lastThreeDates[0] - lastThreeDates[1]) === 86400000 && Math.abs(lastThreeDates[1] - lastThreeDates[2]) === 86400000;
-    const next = dayjs(lastThreeDates[2]).add(1, "day").format("YYYY-MM-DD");
+    const lastThreeDates = item.workDateArr.slice(maxLxWorkNum.value * -1).map((date) => new Date(date).getTime());
+
+    // 初始化一个布尔值数组来记录每一对日期是否连续
+    const isDatesContinuous = <any>[];
+
+    for (let i = 0; i < maxLxWorkNum.value - 1; i++) {
+      // 检查每相邻两天是否相差一天
+      const isLx = Math.abs(lastThreeDates[i] - lastThreeDates[i + 1]) - 86400000 == 0 ? true : false;
+      isDatesContinuous.push(isLx);
+    }
+    // 如果所有检查的结果都是true，则表示这连续几天都是连续工作日
+    const isLxWork = isDatesContinuous.every((val) => val === true);
+    const next = dayjs(lastThreeDates[maxLxWorkNum.value - 1])
+      .add(1, "day")
+      .format("YYYY-MM-DD");
     // 连续工作 且 当前日期 不是连续工作的下一天
     if (isLxWork && next == dateStr) {
       // 当系统允许加班且用户也允许加班 才可以加班
@@ -208,7 +258,7 @@ function getCanAllMan(dateStr, sex = 3, jiaban = false) {
 function switchTabIndex(e) {
   if (e == 1) {
     const exitEmpty = classArr.value.find((a) => {
-      if (!a["node"] || a["dateRange"].length == 0) {
+      if (!a["node"] || !a["startTime"] || !a["endTime"]) {
         return true;
       }
     });
@@ -216,6 +266,17 @@ function switchTabIndex(e) {
     if (exitEmpty) {
       return Message.info({ content: "班次信息未设置完善", position: "bottom" });
     }
+    for (let item of classArr.value) {
+      const startDate = dayjs().format(`YYYY-MM-DD ${item.startTime}`).valueOf();
+      let endDate = dayjs().format(`YYYY-MM-DD ${item.endTime}`).valueOf();
+      if (startDate > endDate) {
+        endDate = dayjs().add(1, "day").format(`YYYY-MM-DD ${item.endTime}`).valueOf();
+        item["is_jump"] = true; //跨天
+      }
+
+      item["chaTime"] = dayjs(endDate).diff(dayjs(startDate), "ms");
+    }
+    console.log("ddddddd", classArr.value);
   }
   stepNumIndex.value = e;
   if (stepNumIndex.value == 4) {
@@ -250,6 +311,10 @@ const minManWorkNum = computed(() => {
   const date2 = dayjs(dateRangeArr.value[1]);
   const diff = date2.diff(date1, "day");
   const cycleDayNum = maxLxWorkNum.value + freeNum.value;
+  const totalTime = Math.ceil(diff / cycleDayNum) * 8 * dayWorkManNum.value;
+  if (totalTime > 160) {
+  }
+
   if (diff > cycleDayNum) {
     return num;
   } else {

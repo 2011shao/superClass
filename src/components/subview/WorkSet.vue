@@ -22,6 +22,7 @@
         :min="1"
       ></a-input-number>
     </div>
+    
     <div class="row-start-center">
       <a-tooltip :content="`上${maxLxWorkNum}休${freeNum}`">
         <a-typography-text class="labelText">连续工作天数 </a-typography-text>
@@ -112,6 +113,7 @@
         </template>
       </a-select>
     </div>
+    
     <div class="row-start-center">
       <a-typography-text class="labelText">是否允许加班</a-typography-text>
       <a-radio-group v-model="superWork">

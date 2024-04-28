@@ -81,7 +81,7 @@ async function addBitNewField(fileName, tableId, fieldType = FieldType.Text, pro
   }
 }
 // 新增记录
-async function addBitRecord(arr,tableId) {
+async function addBitRecord(arr, tableId) {
   const result_table = await bitable.base.getTableById(tableId);
   const res = await result_table.addRecords(arr);
 }
@@ -153,6 +153,7 @@ async function oneStepCreateManConfig() {
   const name_id = await table.addField({ type: FieldType.Text, name: "姓名", description: { content: "插件[排班助手]与姓名(人员)二选一" } });
   const name_man = await table.addField({ type: FieldType.User, name: "姓名(人员)", description: { content: "插件[排班助手]与姓名二选一" } });
   dic[name_id] = "测试-张三";
+
   const sex_id = await table.addField({ type: FieldType.SingleSelect, name: "性别", description: { content: "插件[排班助手]不填写默认为男性" } });
   const sex_filed = await table.getField(sex_id);
   await sex_filed.addOptions([{ name: "男" }, { name: "女" }]);
@@ -170,11 +171,16 @@ async function oneStepCreateManConfig() {
   const superwork_optione = await superwork_filed.getOptions();
   dic[superwork_id] = superwork_optione[0];
 
+  const max_work_time = await table.addField({ type: FieldType.Number, name: "总工时", description: { content: "所选日期内最多允许的工作小时数" } });
+  const other_work_time = await table.addField({ type: FieldType.Number, name: "附加工时", description: { content: "可正可负:每个班次8小时,设置为8则多排一天,-8为少排一天" } });
+  dic[max_work_time] = 160;
+  dic[other_work_time] = 0;
+
   const workdate_id = await table.addField({ type: FieldType.DateTime, name: "预设工作日期", description: { content: "插件[排班助手]多个日期用因为逗号','隔开" } });
   const freedate_id = await table.addField({ type: FieldType.DateTime, name: "预设休息日期", description: { content: "插件[排班助手]多个日期用因为逗号','隔开" } });
-   dic[workdate_id] = new Date("2024-01-01").getTime();
-   dic[freedate_id] = new Date("2024-01-02").getTime();
-   table.addRecord({ fields: dic });
+  dic[workdate_id] = new Date("2024-01-01").getTime();
+  dic[freedate_id] = new Date("2024-01-02").getTime();
+  table.addRecord({ fields: dic });
   switchTable(tableId);
 }
 // ----------------------------------一键创建导出表
