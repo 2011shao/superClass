@@ -8,79 +8,83 @@
       </a-typography-text>
     </a-typography-text> -->
     <div class="row-between-center">
-      <a-typography-text disabled>初次使用,请创建人员配置表</a-typography-text>
+      <a-typography-text disabled>{{
+        t("初次使用,请创建人员配置表")
+      }}</a-typography-text>
       <a-popconfirm content="确定创建" @ok="createTabLeVoid">
-        <a-button type="primary" status="success">创建人员配置表</a-button>
+        <a-button type="primary" status="success">{{
+          t("创建人员配置表")
+        }}</a-button>
       </a-popconfirm>
     </div>
     <a-divider></a-divider>
     <div class="grid-one p-all-1 grid-gap-5">
       <SelectTableView
-        title="选择表"
+        :title="t('选择表')"
         v-model="import_table_id"
         canAdd
       ></SelectTableView>
       <SelectField
         must=""
-        title="姓名"
+        :title="t('姓名')"
         v-model="bit_import_dic.name_filed"
         :typeNumArr="[1, 11]"
-        :preSetArr="['姓名']"
+        :preSetArr="[t('姓名')]"
         :allFieldDic="bit_import_dic"
       ></SelectField>
       <SelectField
-        title="性别"
+        :title="t('性别')"
         v-model="bit_import_dic.sex_filed"
         :typeNumArr="[3]"
-        :preSetArr="['性别']"
+        :preSetArr="[t('性别')]"
         :allFieldDic="bit_import_dic"
       ></SelectField>
       <SelectField
-        title="是否参与排班"
+        :title="t('是否参与排班')"
         :label-style="{ width: '120px' }"
         v-model="bit_import_dic.canWork_filed"
         :typeNumArr="[3]"
-        :preSetArr="['是否参与排班']"
+        :preSetArr="[t('是否参与排班')]"
         :allFieldDic="bit_import_dic"
       ></SelectField>
       <SelectField
-        title="是否允许加班"
+        :title="t('是否允许加班')"
         :label-style="{ width: '120px' }"
         v-model="bit_import_dic.superWork_filed"
         :typeNumArr="[3]"
-        :preSetArr="['是否允许加班']"
+        :preSetArr="[t('是否允许加班')]"
         :allFieldDic="bit_import_dic"
       ></SelectField>
       <SelectField
-        title="总工时"
+        :title="t('总工时')"
         :label-style="{ width: '120px' }"
         v-model="bit_import_dic.total_work_time_filed"
         :typeNumArr="[2]"
-        :preSetArr="['总工时']"
+        :preSetArr="[t('总工时')]"
         :allFieldDic="bit_import_dic"
       ></SelectField>
       <SelectField
-        title="附加工时"
+        :title="t('附加工时')"
         :label-style="{ width: '120px' }"
         v-model="bit_import_dic.other_work_time_filed"
         :typeNumArr="[2]"
-        :preSetArr="['附加工时']"
+        :preSetArr="[t('附加工时')]"
         :allFieldDic="bit_import_dic"
       ></SelectField>
       <SelectField
-        title="预设工作日期"
+        :title="t('预设工作日期')"
         :label-style="{ width: '120px' }"
         v-model="bit_import_dic.workDate_filed"
         :typeNumArr="[1, 5]"
-        :preSetArr="['预设工作日期']"
+        :preSetArr="[t('预设工作日期')]"
         :allFieldDic="bit_import_dic"
       ></SelectField>
       <SelectField
-        title="预设休息日期"
+        :title="t('预设休息日期')"
         :label-style="{ width: '120px' }"
         v-model="bit_import_dic.freeDate_filed"
         :typeNumArr="[1, 5]"
-        :preSetArr="['预设休息日期']"
+        :preSetArr="[t('预设休息日期')]"
         :allFieldDic="bit_import_dic"
       ></SelectField>
 
@@ -92,27 +96,29 @@
         <a-tooltip>
           <template #content>
             <div class="grid-one grid-gap-5 m-t-5">
-              <a-typography-text style="color: var(--color-neutral-4)"
-                >姓名:字段可以是人员或文本,姓名相同时取第一个</a-typography-text
-              >
-              <a-typography-text style="color: var(--color-neutral-4)"
-                >性别:字段要求单选,选项:男与女</a-typography-text
-              >
-              <a-typography-text style="color: var(--color-neutral-4)"
-                >是否参与排班:字段要求单选,选项:是与否</a-typography-text
-              >
-              <a-typography-text style="color: var(--color-neutral-4)"
-                >是否允许加班:字段要求单选,选项:是与否</a-typography-text
-              >
-              <a-typography-text style="color: var(--color-neutral-4)"
-                >预设日期:字段要求文本或者日期,多个日期请用英文","隔开</a-typography-text
-              >
+              <a-typography-text style="color: var(--color-neutral-4)">{{
+                t("姓名:字段可以是人员或文本,姓名相同时取第一个")
+              }}</a-typography-text>
+              <a-typography-text style="color: var(--color-neutral-4)">{{
+                t("性别:字段要求单选,选项:男与女")
+              }}</a-typography-text>
+              <a-typography-text style="color: var(--color-neutral-4)">{{
+                t("是否参与排班:字段要求单选,选项:是与否")
+              }}</a-typography-text>
+              <a-typography-text style="color: var(--color-neutral-4)">{{
+                t("是否允许加班:字段要求单选,选项:是与否")
+              }}</a-typography-text>
+              <a-typography-text style="color: var(--color-neutral-4)">{{
+                t("预设日期:字段要求文本或者日期,多个日期请用英文,隔开")
+              }}</a-typography-text>
             </div>
           </template>
-          <a-typography-text>帮助<icon-question-circle /></a-typography-text>
+          <a-typography-text
+            >{{ t("帮助") }}<icon-question-circle
+          /></a-typography-text>
         </a-tooltip>
         <a-button type="primary" @click="exportVoid"
-          >下一步 <icon-right />
+          >{{t('下一步')}} <icon-right />
         </a-button>
       </div>
     </a-affix>
@@ -141,15 +147,16 @@ import {
   is_select_name_field_type,
 } from "../js/superBase";
 import SelectTableView from "../superView/selectTable.vue";
-
+import { useI18n } from "vue-i18n";
+const { t } = useI18n();
 import dayjs from "dayjs";
 const buttonLoading = ref(false);
 const progress = ref(0);
 const bit_import_dic = ref({
   name_filed: "",
   sex_filed: "",
-  total_work_time_filed:0,//总工时
-  other_work_time_filed:0,//其他工时
+  total_work_time_filed: 0, //总工时
+  other_work_time_filed: 0, //其他工时
   workDate_filed: "", //工作日期
   freeDate_filed: "", //休息日期
   superWork_filed: "", //是否加班
@@ -159,7 +166,7 @@ const bit_import_dic = ref({
 // 导出word
 async function exportVoid() {
   if (!bit_import_dic.value.name_filed) {
-    Message.info("选择姓名字段");
+    Message.info(t("选择姓名字段"));
     return;
   }
   progress.value = 0;
@@ -198,13 +205,13 @@ async function exportVoid() {
       bit_import_dic.value.total_work_time_filed,
       "total_work_time_filed"
     );
-    
+
     const other_work_time = await getCellValue(
       recordValue,
       bit_import_dic.value.other_work_time_filed,
       "other_work_time_filed"
     );
-    
+
     const freeDateArr = await getCellValue(
       recordValue,
       bit_import_dic.value.freeDate_filed,
@@ -216,7 +223,6 @@ async function exportVoid() {
       "superWork_filed"
     );
 
-    
     // console.log("333", nameDic);
 
     if (nameDic) {
@@ -227,17 +233,17 @@ async function exportVoid() {
       const dic = {
         name: nameFileDic.type == 11 ? nameDic.name : nameDic,
         id: nameFileDic.type == 11 ? nameDic.id : i,
-        sex: sex.indexOf("女") >= 0 ? 2 : 1, //1男 2女 3不限制男女
-        canWork: canWork == "否" ? false : true, //是否参见工作
+        sex: sex.indexOf(t("女")) >= 0 ? 2 : 1, //1男 2女 3不限制男女
+        canWork: canWork == t("否") ? false : true, //是否参见工作
         freeNum: freeNum.value,
         maxLxWorkNum: maxLxWorkNum.value,
         maxWorkNum: maxWorkNum.value,
-        total_work_time:total_work_time>0?total_work_time:1000,
-        other_work_time:other_work_time,
+        total_work_time: total_work_time > 0 ? total_work_time : 1000,
+        other_work_time: other_work_time,
         workDateArr: workDateArr || [],
         freeDateArr: freeDateArr || [],
         jiabanWorkArr: [],
-        superWork: superWork == "否" ? false : true,
+        superWork: superWork ==  t("否") ? false : true,
         fieldType: nameFileDic.type,
       };
       const czMan = newDataArr.find((e) => e.name == dic.name);

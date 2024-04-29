@@ -10,7 +10,7 @@
         :trigger-props="{ preventFocus: false }"
         @change="changeValue"
         v-model="props.modelValue"
-        :placeholder="'选择' + props.title"
+        :placeholder="t('选择') + props.title"
         :options="getCanOption"
         @clear="changeValue('')"
         :field-names="{ value: 'id', label: 'name' }"
@@ -19,12 +19,12 @@
       >
         <template #header v-if="canAdd">
           <a-input-search
-            placeholder="新增字段,新增字段默认为text"
+            :placeholder="t('新增字段,新增字段默认为text')"
             search-button
             :loading="addInputLoading"
             v-model="newFieldName"
             @search="sureAdd"
-            button-text="确定"
+            :button-text="t('确定')"
           >
           </a-input-search>
         </template>
@@ -44,7 +44,8 @@ import {
 import { cloneDeep } from "lodash";
 import { computed, ref, watch, watchEffect } from "vue";
 import { Message } from "@arco-design/web-vue";
-
+import { useI18n } from "vue-i18n";
+const { t } = useI18n();
 const props = defineProps({
   title: {
     type: String,
@@ -91,7 +92,7 @@ async function sureAdd() {
     const filedId = await addBitNewField(newFieldName.value,props.modelValue);
     changeValue(filedId);
   } else {
-    Message.info("字段名字不能为空");
+    Message.info(t("字段名字不能为空"));
   }
   addInputLoading.value = false;
   newFieldName.value = "";

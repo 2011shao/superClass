@@ -15,6 +15,8 @@ export const i18n = createI18n({
 })
 
 bitable.bridge.getLanguage().then((lang) => {
-  i18n.global.locale = lang
+  // i18n.global.locale = lang
 })
+
+
 

@@ -3,6 +3,8 @@ import { classArr } from "./common";
 import { ref } from "vue";
 import { Message } from "@arco-design/web-vue";
 import dayjs from "dayjs";
+import {i18n} from "../../locales/i18n"
+const  t  = i18n.global.t
 let bit_table: ITable;
 const bit_loading = ref(false);
 const bit_all_fieldList = ref<any>([]);
@@ -95,7 +97,7 @@ async function getAllTable(loadCache = false) {
 
   bit_all_table.value = await bitable.base.getTableMetaList();
   if (!import_table_id.value) {
-    const cz = bit_all_table.value.find((a) => a["name"] == "排班助手-人员配置表");
+    const cz = bit_all_table.value.find((a) => a["name"] == t("排班助手-人员配置表"));
     if (cz) {
       import_table_id.value = cz.id;
     } else {
@@ -113,7 +115,7 @@ async function getAllTable(loadCache = false) {
     }
   }
   if (!export_table_id.value) {
-    const cz = bit_all_table.value.find((a) => a["name"] == "排班助手-排班结果");
+    const cz = bit_all_table.value.find((a) => a["name"] == t("排班助手-排班结果"));
     if (cz) {
       export_table_id.value = cz.id;
     }
@@ -137,12 +139,12 @@ export { getAllTable, bit_all_table, bit_select_dic, addBitNewTable, switchTable
 // ----------------------------------一键创建配置表
 
 async function oneStepCreateManConfig() {
-  const tableName = "排班助手-人员配置表";
+  const tableName = t("排班助手-人员配置表");
   const tableList = await bitable.base.getTableMetaList();
   const isExit = tableList.find((a) => a["name"] == tableName);
   if (isExit) {
     switchTable(isExit.id);
-    Message.info("已创建人员配置表");
+    Message.info(t("已创建人员配置表"));
     return;
   }
 
@@ -150,34 +152,34 @@ async function oneStepCreateManConfig() {
   const table = await bitable.base.getTableById(tableId);
 
   let dic = {};
-  const name_id = await table.addField({ type: FieldType.Text, name: "姓名", description: { content: "插件[排班助手]与姓名(人员)二选一" } });
-  const name_man = await table.addField({ type: FieldType.User, name: "姓名(人员)", description: { content: "插件[排班助手]与姓名二选一" } });
-  dic[name_id] = "测试-张三";
+  const name_id = await table.addField({ type: FieldType.Text, name: t("姓名"), description: { content: t("插件[排班助手]与姓名(人员)二选一") } });
+  const name_man = await table.addField({ type: FieldType.User, name: t("姓名(人员)"), description: { content: t("插件[排班助手]与姓名二选一") } });
+  dic[name_id] = t("测试-张三");
 
-  const sex_id = await table.addField({ type: FieldType.SingleSelect, name: "性别", description: { content: "插件[排班助手]不填写默认为男性" } });
+  const sex_id = await table.addField({ type: FieldType.SingleSelect, name: t("性别"), description: { content: t("插件[排班助手]不填写默认为男性") } });
   const sex_filed = await table.getField(sex_id);
-  await sex_filed.addOptions([{ name: "男" }, { name: "女" }]);
+  await sex_filed.addOptions([{ name: t("男") }, { name: t("女") }]);
   const sex_optione = await sex_filed.getOptions();
   dic[sex_id] = sex_optione[0];
 
-  const canwork_id = await table.addField({ type: FieldType.SingleSelect, name: "是否参与排班", description: { content: "插件[排班助手]不填写默认为参加" } });
+  const canwork_id = await table.addField({ type: FieldType.SingleSelect, name: t("是否参与排班"), description: { content: t("插件[排班助手]不填写默认为参加") } });
   const canwork_filed = await table.getField(canwork_id);
-  await canwork_filed.addOptions([{ name: "是" }, { name: "否" }]);
+  await canwork_filed.addOptions([{ name: t("是") }, { name: t("否") }]);
   const can_optione = await canwork_filed.getOptions();
   dic[canwork_id] = can_optione[0];
-  const superwork_id = await table.addField({ type: FieldType.SingleSelect, name: "是否允许加班", description: { content: "插件[排班助手]不填写默认为是 " } });
+  const superwork_id = await table.addField({ type: FieldType.SingleSelect, name: t("是否允许加班"), description: { content: t("插件[排班助手]不填写默认为是") } });
   const superwork_filed = await table.getField(superwork_id);
-  await superwork_filed.addOptions([{ name: "是" }, { name: "否" }]);
+  await superwork_filed.addOptions([{ name: t("是") }, { name: t("否") }]);
   const superwork_optione = await superwork_filed.getOptions();
   dic[superwork_id] = superwork_optione[0];
 
-  const max_work_time = await table.addField({ type: FieldType.Number, name: "总工时", description: { content: "所选日期内最多允许的工作小时数" } });
-  const other_work_time = await table.addField({ type: FieldType.Number, name: "附加工时", description: { content: "可正可负:每个班次8小时,设置为8则多排一天,-8为少排一天" } });
+  const max_work_time = await table.addField({ type: FieldType.Number, name: t("总工时"), description: { content: t("所选日期内最多允许的工作小时数") } });
+  const other_work_time = await table.addField({ type: FieldType.Number, name: t("附加工时"), description: { content: t("可正可负:每个班次8小时,设置为8则多排一天,-8为少排一天") } });
   dic[max_work_time] = 160;
   dic[other_work_time] = 0;
 
-  const workdate_id = await table.addField({ type: FieldType.DateTime, name: "预设工作日期", description: { content: "插件[排班助手]多个日期用因为逗号','隔开" } });
-  const freedate_id = await table.addField({ type: FieldType.DateTime, name: "预设休息日期", description: { content: "插件[排班助手]多个日期用因为逗号','隔开" } });
+  const workdate_id = await table.addField({ type: FieldType.DateTime, name: t("预设工作日期"), description: { content: t("插件[排班助手]多个日期用因为逗号','隔开") } });
+  const freedate_id = await table.addField({ type: FieldType.DateTime, name: t("预设休息日期"), description: { content: t("插件[排班助手]多个日期用因为逗号','隔开") } });
   dic[workdate_id] = new Date("2024-01-01").getTime();
   dic[freedate_id] = new Date("2024-01-02").getTime();
   table.addRecord({ fields: dic });
@@ -186,7 +188,7 @@ async function oneStepCreateManConfig() {
 // ----------------------------------一键创建导出表
 
 async function oneStepCreateResutTable() {
-  const tableName = "排班助手-排班结果";
+  const tableName = t("排班助手-排班结果");
   const tableList = await bitable.base.getTableMetaList();
   const isExit = tableList.find((a) => a["name"] == tableName);
   let dic = {};
@@ -226,7 +228,7 @@ async function oneStepCreateResutTable() {
   export_table_id.value = tableId;
 
   const table = await bitable.base.getTableById(tableId);
-  const date_id = await table.addField({ type: FieldType.DateTime, name: "日期", description: { content: "" } });
+  const date_id = await table.addField({ type: FieldType.DateTime, name: t("日期"), description: { content: "" } });
   dic["date"] = date_id;
   for (let item of classArr.value) {
     const class_id = await table.addField({ type: is_select_name_field_type.value == 11 ? FieldType.User : FieldType.Text, name: item.node, description: { content: item.dateRange.join("~") } });

@@ -7,7 +7,7 @@
     <div v-if="manArr.length > 0 && classArr.length > 0 && dataArr.length > 0">
       <div class="row-between-center m-b-10">
         <div class="grid-two grid-gap-5">
-          <a-tooltip content="排班视图">
+          <a-tooltip :content="t('排班视图')">
             <a-button
               :type="showTable == 2 ? 'primary' : 'dashed'"
               @click="() => (showTable = 2)"
@@ -17,7 +17,7 @@
               </template>
             </a-button>
           </a-tooltip>
-          <a-tooltip content="人员视图">
+          <a-tooltip :content="t('人员视图')">
             <a-button
               :type="showTable == 1 ? 'primary' : 'dashed'"
               @click="() => (showTable = 1)"
@@ -89,6 +89,8 @@ import {
   switchTabIndex,
   stepNumIndex,
 } from "../js/common";
+import { useI18n } from "vue-i18n";
+const { t } = useI18n();
 const tsMsg = computed(() => {
   let msg = "";
   const exitEmpty = classArr.value.find((a) => {
@@ -97,13 +99,13 @@ const tsMsg = computed(() => {
     }
   });
   if (classArr.value.length == 0) {
-    msg = "请设置班次";
+    msg = t("请设置班次");
   } else if (exitEmpty) {
-    msg = "班次信息未设置完善";
+    msg = t("班次信息未设置完善");
   } else if (manArr.value.length == 0) {
-    msg = "请先加载人员配置";
+    msg = t("请先加载人员配置");
   } else if (dataArr.value.length == 0) {
-    msg = "人员不足";
+    msg = t("人员不足");
   }
   if (stepNumIndex.value == 4) {
     Message.info({content:msg,position:"bottom"});
@@ -125,19 +127,19 @@ const manColumns = computed(() => {
   return [
     {
       key: 1,
-      title: "姓名",
+      title: t("姓名"),
       dataIndex: "name",
     },
     ...arr,
     {
       key: 1,
-      title: "加班",
+      title: t("加班"),
       dataIndex: "jiabanWorkArr",
       slotName: "jiabanWorkArr",
     },
     {
       key: 1,
-      title: "总工时",
+      title: t("总工时"),
       dataIndex: "workDetailDic",
       render:({record})=>record.workDetailDic.totalWorkTime/(3600*1000)
     }
@@ -158,13 +160,13 @@ const resultClassColumns = computed(() => {
   return [
     {
       key: 1,
-      title: "排班结果",
+      title: t("排班结果"),
       dataIndex: "node",
       slotName: "node",
       children: [
         {
           key: 1,
-          title: "日期",
+          title: t("日期"),
           dataIndex: "date",
           align: "center",
           width: 110,

@@ -1,22 +1,22 @@
 <template>
   <a-spin :loading="loading || bit_loading" style="width: 100%">
     <div class="row-between-center">
-      <a-typography-text disabled>初次使用,请创建排班结果表</a-typography-text>
-      <a-popconfirm content="确定创建" @ok="createTabLeVoid">
-        <a-button type="primary">创建排班结果表</a-button>
+      <a-typography-text disabled>{{t('初次使用,请创建排班结果表')}}</a-typography-text>
+      <a-popconfirm :content="t('确定创建')" @ok="createTabLeVoid">
+        <a-button type="primary">{{t('创建排班结果表')}}</a-button>
       </a-popconfirm>
     </div>
     <div class="grid-one p-all-1 grid-gap-5">
       <SelectTableView
-        title="选择表"
+        :title="t('选择表')"
         v-model="export_table_id"
         canAdd
       ></SelectTableView>
       <SelectFieldView
-        title="日期"
+        :title="t('日期')"
         v-model="bit_export_dic.date"
         :typeNumArr="[1, 5]"
-        :preSetArr="['日期']"
+        :preSetArr="[t('日期')]"
         :allFieldDic="bit_export_dic"
         canAdd
       ></SelectFieldView>
@@ -34,7 +34,7 @@
     </div>
     <div class="row-center-center m-t-10">
       <a-button :disabled="!canImport" type="primary" @click="fixToBitData"
-        >开始导入</a-button
+        >{{t('开始导入')}}</a-button
       >
     </div>
   </a-spin>
@@ -54,6 +54,8 @@ import {
   bit_all_table,
   bit_all_fieldList,
 } from "../js/superBase";
+import { useI18n } from "vue-i18n";
+const { t } = useI18n();
 import SelectFieldView from "../superView/SelectField.vue";
 import SelectTableView from "../superView/selectTable.vue";
 const loading = ref(false);
@@ -119,7 +121,7 @@ async function fixToBitData() {
     return dic;
   });
   await addBitRecord(arr, export_table_id.value);
-  Message.success("导入成功");
+  Message.success(t("导入成功"));
   loading.value = false;
 }
 </script>

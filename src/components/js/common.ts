@@ -17,11 +17,13 @@ const superWork = ref(false); //是否允许加班
 const dataArr = ref([]);
 const manArr = ref<any>([]);
 const middleArr = ref<any>([]);
+import {i18n} from "../../locales/i18n"
+const  t  = i18n.global.t
 
 // 班次设置
 const classArr = ref([
   {
-    node: "早班",
+    node: t("早班"),
     num: 2,
     sex: 3,
     startTime: "02:00",
@@ -31,7 +33,7 @@ const classArr = ref([
     chaTime: 0, //差
   },
   {
-    node: "白班",
+    node: t("白班"),
     num: 2,
     sex: 3,
     startTime: "10:00",
@@ -41,7 +43,7 @@ const classArr = ref([
     chaTime: 0, //差
   },
   {
-    node: "晚班",
+    node: t("晚班"),
     num: 2,
     sex: 3,
     startTime: "18:00",
@@ -144,7 +146,7 @@ function computedWork() {
       const sex = node.sex;
       // 全员休息
       if (noWorkDateArr.value.includes(dateStr)) {
-        dayWorkDic["remark"] = "全员休息";
+        dayWorkDic["remark"] = t("全员休息");
         continue;
       }
       //获取预设工作人员
@@ -166,7 +168,7 @@ function computedWork() {
         }
         console.log(num - canWorkMan.length);
         totalNum = totalNum + (num - canWorkMan.length);
-        dayWorkDic["remark"] = `${dateStr}~${node}人员不足`;
+        dayWorkDic["remark"] = `${dateStr}~${node}${t('人员不足')}`;
       }
     }
     dataArr.value.push(dayWorkDic);
@@ -264,7 +266,7 @@ function switchTabIndex(e) {
     });
 
     if (exitEmpty) {
-      return Message.info({ content: "班次信息未设置完善", position: "bottom" });
+      return Message.info({ content: t("班次信息未设置完善"), position: "bottom" });
     }
     for (let item of classArr.value) {
       const startDate = dayjs().format(`YYYY-MM-DD ${item.startTime}`).valueOf();

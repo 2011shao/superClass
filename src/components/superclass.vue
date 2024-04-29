@@ -6,20 +6,20 @@
       @tab-click="changeTabIndex"
     >
       <a-tab-pane :key="0">
-        <template #title> <icon-calendar /> 设置班次 </template>
+        <template #title> <icon-calendar /> {{t('设置班次')}} </template>
         <ClassSet></ClassSet>
       </a-tab-pane>
       <a-tab-pane :key="1">
         <template #title>
           <icon-settings />
-          工作设置
+          {{t('工作设置')}}
         </template>
         <WorkSet></WorkSet>
       </a-tab-pane>
       <a-tab-pane :key="2">
         <template #title>
           <icon-download />
-          加载人员设置
+          {{t('加载人员设置')}}
         </template>
         <ImportData></ImportData>
       </a-tab-pane>
@@ -30,15 +30,15 @@
       </template>
       <ManSet></ManSet>
     </a-tab-pane> -->
-      <a-tab-pane :key="4" title="排班结果">
+      <a-tab-pane :key="4" :title="t('排班结果')">
         <template #title>
           <icon-select-all />
-          排班结果
+          {{t('排班结果')}}
         </template>
         <ResultView></ResultView>
       </a-tab-pane>
-      <a-tab-pane :key="5" title="导入表格">
-        <template #title> <icon-translate /> 导入表格 </template>
+      <a-tab-pane :key="5" :title="t('导入表格')">
+        <template #title> <icon-translate />{{t('导入表格')}}  </template>
         <ImportResult></ImportResult>
       </a-tab-pane>
     </a-tabs>
@@ -54,7 +54,8 @@ import ResultView from "./subview/Result.vue";
 import WorkSet from "./subview/WorkSet.vue";
 import ImportData from "./subview/ImportData.vue";
 import ImportResult from "./subview/ImportResult.vue";
-
+import { useI18n } from "vue-i18n";
+const { t } = useI18n();
 import {
   manArr,
   dateRangeArr,

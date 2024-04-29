@@ -1,14 +1,17 @@
 
 <template>
   <main>
+   
     <superclass class="p-all-5" />
   </main>
 </template>
 <script setup>
 import dayjs from "dayjs";
 import superclass from "./components/superclass.vue";
-const cha=dayjs('23:00').diff('02:00','ms')
-console.log('4月28日更新',cha)
+const cha = dayjs("23:00").diff("02:00", "ms");
+import { useI18n } from "vue-i18n";
+const { t } = useI18n();
+console.log("4月28日更新-国际化 与新增功能");
 </script>
 
 <style>
